@@ -2420,6 +2420,7 @@ dependencies = [
     { name = "edgartools" },
     { name = "kagglehub" },
     { name = "pandas" },
+    { name = "pydantic" },
     { name = "pydantic-ai" },
 ]
 
@@ -2428,6 +2429,7 @@ requires-dist = [
     { name = "edgartools", specifier = ">=5.25.1" },
     { name = "kagglehub", specifier = ">=1.0.0" },
     { name = "pandas", specifier = ">=3.0.1" },
+    { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pydantic-ai", specifier = ">=1.70.0" },
 ]
 
