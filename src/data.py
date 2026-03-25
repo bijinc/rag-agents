@@ -197,23 +197,6 @@ def save_manifest(stats):
     except Exception as e:
         print(f"✗ Error saving manifest: {e}")
 
-
-##############################################################################
-#                        EXISTING SEC FUNCTIONS                              #
-##############################################################################
-
-def get_sec_balance_sheet(ticker):
-    """Get balance sheet for a company"""
-    company = edgar.Company(ticker)
-    return company.get_financials().balance_sheet()
-
-
-def get_sec_filings(ticker):
-    """Get all filings for a company"""
-    company = edgar.Company(ticker)
-    return company.get_filings()
-
-
 if __name__ == "__main__":
     # Set up directories
     TICKERS = ["AAPL", "AMD"]
