@@ -205,3 +205,15 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Project Data (NOT for git)
+data/raw/
+data/processed/
+data/index/
+*.db
+*.sqlite
+*.sqlite3
+
+# Project-specific (keep manifest for metadata, but not actual data)
+data/*
+!data/manifest.json
