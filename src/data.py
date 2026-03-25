@@ -30,10 +30,16 @@ def load_ect_data(path, name):
     return df
 
 
-# Map company names (dataset format) to display names and tickers
-ECT_COMPANY_MAPPING = {
-    "Apple": {"ticker": "AAPL", "display_name": "Apple Inc."},
-    "AMD": {"ticker": "AMD", "display_name": "Advanced Micro Devices"}
+# Single source of truth for company configuration
+COMPANIES = {
+    "AAPL": {
+        "display_name": "Apple Inc.",
+        "ect_dataset_name": "Apple"  # Name as it appears in Kaggle dataset
+    },
+    "AMD": {
+        "display_name": "Advanced Micro Devices",
+        "ect_dataset_name": "AMD"
+    }
 }
 
 
@@ -53,13 +59,13 @@ def extract_ect_metadata(filename):
     return None, None
 
 
-def fetch_ect_for_companies(dataset_path, company_names):
+def fetch_ect_for_companies(dataset_path, tickers):
     """
     Fetch earnings call transcripts for specified companies.
 
     Args:
         dataset_path: Path to the downloaded Kaggle dataset
-        company_names: List of company names (as they appear in dataset, e.g., ["Apple", "AMD"])
+        tickers: List of tickers (e.g., ["AAPL", "AMD"])
 
     Returns:
         Dict mapping ticker to list of ECT dicts
@@ -67,20 +73,20 @@ def fetch_ect_for_companies(dataset_path, company_names):
     ect_data = {}
     dataset_root = os.path.join(dataset_path, "cleaned_ECTs_dataset")
 
-    for company_name in company_names:
-        if company_name not in ECT_COMPANY_MAPPING:
-            print(f"  ✗ Company {company_name} not in mapping")
+    for ticker in tickers:
+        if ticker not in COMPANIES:
+            print(f"  ✗ Ticker {ticker} not in COMPANIES config")
             continue
 
-        ticker = ECT_COMPANY_MAPPING[company_name]["ticker"]
-        display_name = ECT_COMPANY_MAPPING[company_name]["display_name"]
-        company_path = os.path.join(dataset_root, company_name)
+        display_name = COMPANIES[ticker]["display_name"]
+        dataset_name = COMPANIES[ticker]["ect_dataset_name"]
+        company_path = os.path.join(dataset_root, dataset_name)
 
         if not os.path.exists(company_path):
-            print(f"  ✗ Company folder not found: {company_name}")
+            print(f"  ✗ Company folder not found: {dataset_name}")
             continue
 
-        print(f"  Loading ECT for {company_name}...")
+        print(f"  Loading ECT for {ticker}...")
         ect_files = sorted(os.listdir(company_path))
         transcripts = []
 
@@ -114,9 +120,9 @@ def fetch_ect_for_companies(dataset_path, company_names):
 
         if transcripts:
             ect_data[ticker] = transcripts
-            print(f"    ✓ Loaded {len(transcripts)} ECT records for {company_name}")
+            print(f"    ✓ Loaded {len(transcripts)} ECT records for {ticker}")
         else:
-            print(f"    ✗ No ECT records found for {company_name}")
+            print(f"    ✗ No ECT records found for {ticker}")
 
     return ect_data
 
@@ -124,17 +130,14 @@ def fetch_ect_for_companies(dataset_path, company_names):
 def save_ect_filings(ect_data):
     """
     Save ECT data as JSON files.
-    Directory structure: data/raw/ect/{company_name}/{period}.json
+    Directory structure: data/raw/ect/{ticker}/{period}.json
     """
     for ticker, transcripts in ect_data.items():
-        # Get company name from first transcript
-        if transcripts:
-            company_name = transcripts[0]["company_name"]
-        else:
+        if not transcripts:
             continue
 
-        # Create directory
-        ect_dir = Path(f"data/raw/ect/{company_name}")
+        # Create directory using ticker for consistency
+        ect_dir = Path(f"data/raw/ect/{ticker}")
         ect_dir.mkdir(parents=True, exist_ok=True)
 
         # Save each transcript
@@ -152,11 +155,6 @@ def save_ect_filings(ect_data):
 ##############################################################################
 #                    SEC FILINGS DATA COLLECTION                             #
 ##############################################################################
-
-COMPANY_INFO = {
-    "AAPL": "Apple Inc.",
-    "AMD": "Advanced Micro Devices"
-}
 
 FILING_TYPES = {
     "10-K": 2,   # Annual reports
@@ -199,7 +197,7 @@ def fetch_filings_by_type(company, ticker, filing_type, n):
                 # Create filing data dict
                 filing_data = {
                     "ticker": ticker,
-                    "company_name": COMPANY_INFO.get(ticker, ticker),
+                    "company_name": COMPANIES[ticker]["display_name"],
                     "filing_type": filing.form,
                     "filing_date": str(filing.filing_date),
                     "accession_number": filing.accession_no,
@@ -260,7 +258,7 @@ def download_sec_data(tickers):
             # Create Company object
             company = edgar.Company(ticker)
             stats[ticker] = {
-                "company_name": COMPANY_INFO.get(ticker, ticker),
+                "company_name": COMPANIES[ticker]["display_name"],
                 "filings": {}
             }
 
@@ -339,14 +337,11 @@ if __name__ == "__main__":
     print("="*70 + "\n")
 
     dataset_path = download_ect_dataset()
-    ect_data = fetch_ect_for_companies(dataset_path, ["Apple", "AMD"])
+    ect_data = fetch_ect_for_companies(dataset_path, TICKERS)
     save_ect_filings(ect_data)
 
-    # Count ECT records per company
-    ect_counts = {
-        "Apple Inc.": len(ect_data.get("AAPL", [])),
-        "Advanced Micro Devices": len(ect_data.get("AMD", []))
-    }
+    # Count ECT records per ticker
+    ect_counts = {ticker: len(ect_data.get(ticker, [])) for ticker in TICKERS}
 
     # Update manifest with ECT data
     # Note: save_manifest is called in download_sec_data, need to update it there
