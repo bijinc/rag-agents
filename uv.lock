@@ -2168,6 +2168,9 @@ openai = [
     { name = "openai" },
     { name = "tiktoken" },
 ]
+openrouter = [
+    { name = "openai" },
+]
 retries = [
     { name = "tenacity" },
 ]
@@ -2423,6 +2426,8 @@ dependencies = [
     { name = "pandas" },
     { name = "pydantic" },
     { name = "pydantic-ai" },
+    { name = "pydantic-ai-slim", extra = ["openrouter"] },
+    { name = "python-dotenv" },
 ]
 
 [package.dev-dependencies]
@@ -2437,6 +2442,8 @@ requires-dist = [
     { name = "pandas", specifier = ">=3.0.1" },
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pydantic-ai", specifier = ">=1.70.0" },
+    { name = "pydantic-ai-slim", extras = ["openrouter"], specifier = ">=1.70.0" },
+    { name = "python-dotenv", specifier = ">=1.2.2" },
 ]
 
 [package.metadata.requires-dev]

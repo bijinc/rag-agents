@@ -10,6 +10,8 @@ dependencies = [
     "pandas>=3.0.1",
     "pydantic>=2.12.5",
     "pydantic-ai>=1.70.0",
+    "pydantic-ai-slim[openrouter]>=1.70.0",
+    "python-dotenv>=1.2.2",
 ]
 
 [dependency-groups]
