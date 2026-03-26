@@ -11,3 +11,8 @@ dependencies = [
     "pydantic>=2.12.5",
     "pydantic-ai>=1.70.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.8",
+]
