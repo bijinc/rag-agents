@@ -9,4 +9,6 @@ dependencies = [
     "kagglehub>=1.0.0",
     "pandas>=3.0.1",
     "pydantic-ai>=1.70.0",
+    "sentence-transformers>=3.0.0",
+    "chromadb>=0.6.0",
 ]
