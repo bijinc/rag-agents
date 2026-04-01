@@ -1,0 +1,29 @@
+
+{
+    "AAPL": [
+        "What was the reported revenue in Q1 2024?",
+        "What was the net income for Apple in Q1 2024?",
+        "How much did revenue grow compared to Q1 2023?",
+        "What was the flagship product that contributed the most to revenue in Q1 2024?",
+        "What was the revenue from Mac sales in Q1 2024?",
+        "Which product categories have significant growth in Q1 2024 compared to Q2 2024?",
+        "Records were set in which countries and regions in Q1 2024 for Apple?"
+    ],
+    "AMD": [
+        "What was the net income for AMD in Q2 2024?",
+        "What was the reported revenue for AMD in Q1 2024?"
+    ],
+    "COST": [
+        "What was the gross profit for Costco in Q1 2024?"
+    ],
+    "JPM": [
+        "What was the total revenue for JPMorgan Chase in Q1 2024?",
+        "What was the net income for JPMorgan Chase in Q1 2024?"
+    ],
+    "F": [
+        "What was the operating income for Ford in Q1 2024?"
+    ],
+    "ELV": [
+        "What was the net income for Elevance Health in Q1 2024?"
+    ]
+}
