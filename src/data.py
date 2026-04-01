@@ -1,13 +1,42 @@
-import kagglehub
-import pandas as pd
-import os
-import json
-import edgar
-import re
 from datetime import datetime
 from pathlib import Path
+import pandas as pd
+import kagglehub
+import edgar
+import json
+import time
+import os
+import re
 
 edgar.set_identity("user@example.com")
+
+# Single source of truth for company configuration
+COMPANIES = {
+    "AAPL": {
+        "display_name": "Apple Inc.",
+        "ect_dataset_name": "Apple"  # Name as it appears in Kaggle dataset
+    },
+    "AMD": {
+        "display_name": "Advanced Micro Devices",
+        "ect_dataset_name": "AMD"
+    },
+    "COST": {
+        "display_name": "Costco Wholesale Corporation",
+        "ect_dataset_name": "Costco"
+    },
+    "JPM": {
+        "display_name": "JPMorgan Chase & Co.",
+        "ect_dataset_name": "JPM"
+    },
+    "F": {
+        "display_name": "Ford Motor Company",
+        "ect_dataset_name": "Ford"
+    },
+    "ELV": {
+        "display_name": "Elevance Health, Inc.",
+        "ect_dataset_name": "Elevance Health"
+    }
+}
 
 ##############################################################################
 #                        EARNINGS CALL TRANSCRIPTS DATA                      #
@@ -30,19 +59,6 @@ def load_ect_data(path, name):
     return df
 
 
-# Single source of truth for company configuration
-COMPANIES = {
-    "AAPL": {
-        "display_name": "Apple Inc.",
-        "ect_dataset_name": "Apple"  # Name as it appears in Kaggle dataset
-    },
-    "AMD": {
-        "display_name": "Advanced Micro Devices",
-        "ect_dataset_name": "AMD"
-    }
-}
-
-
 def extract_ect_metadata(filename):
     """
     Extract year and quarter from ECT filename.
@@ -59,7 +75,7 @@ def extract_ect_metadata(filename):
     return None, None
 
 
-def fetch_ect_for_companies(dataset_path, tickers):
+def fetch_ect_for_companies():
     """
     Fetch earnings call transcripts for specified companies.
 
@@ -70,20 +86,22 @@ def fetch_ect_for_companies(dataset_path, tickers):
     Returns:
         Dict mapping ticker to list of ECT dicts
     """
+
+    print("\n" + "="*70)
+    print("EARNINGS CALL TRANSCRIPTS DATA COLLECTION")
+    print("="*70 + "\n")
+
     ect_data = {}
+    dataset_path = download_ect_dataset()
     dataset_root = os.path.join(dataset_path, "cleaned_ECTs_dataset")
 
-    for ticker in tickers:
-        if ticker not in COMPANIES:
-            print(f"  ✗ Ticker {ticker} not in COMPANIES config")
-            continue
-
+    for ticker in COMPANIES.keys():
         display_name = COMPANIES[ticker]["display_name"]
         dataset_name = COMPANIES[ticker]["ect_dataset_name"]
         company_path = os.path.join(dataset_root, dataset_name)
 
         if not os.path.exists(company_path):
-            print(f"  ✗ Company folder not found: {dataset_name}")
+            print(f"  Company folder not found: {dataset_name}")
             continue
 
         print(f"  Loading ECT for {ticker}...")
@@ -115,14 +133,14 @@ def fetch_ect_for_companies(dataset_path, tickers):
                 transcripts.append(ect_entry)
 
             except Exception as e:
-                print(f"    ✗ Error reading {filename}: {e}")
+                print(f"    Error reading {filename}: {e}")
                 continue
 
         if transcripts:
             ect_data[ticker] = transcripts
-            print(f"    ✓ Loaded {len(transcripts)} ECT records for {ticker}")
+            print(f"    Fetched {len(transcripts)} ECT records for {ticker}")
         else:
-            print(f"    ✗ No ECT records found for {ticker}")
+            print(f"    No ECT records found for {ticker}")
 
     return ect_data
 
@@ -150,7 +168,7 @@ def save_ect_filings(ect_data):
                     json.dump(transcript, f, indent=2, ensure_ascii=False)
                 print(f"    Saved: {filepath}")
             except Exception as e:
-                print(f"    ✗ Error saving {filepath}: {e}")
+                print(f"    Error saving {filepath}: {e}")
 
 ##############################################################################
 #                    SEC FILINGS DATA COLLECTION                             #
@@ -163,18 +181,23 @@ FILING_TYPES = {
 }
 
 
-def setup_directories(tickers):
+def setup_directories():
     """Create directory structure for storing SEC filings"""
-    for ticker in tickers:
+    for ticker in COMPANIES.keys():
         for filing_type in FILING_TYPES.keys():
             dir_path = Path(f"data/raw/sec_filings/{ticker}/{filing_type}")
             dir_path.mkdir(parents=True, exist_ok=True)
-            print(f"✓ Created directory: {dir_path}")
+            # print(f"Created directory: {dir_path}")
 
 
 def fetch_filings_by_type(company, ticker, filing_type, n):
     """
     Fetch N filings of a specific type (10-K, 10-Q, or 8-K).
+    Args:
+        company: edgar.Company object
+        ticker: Stock ticker (for logging)
+        filing_type: Type of filing to fetch (e.g., "10-K")
+        n: Number of filings to fetch
 
     Returns:
         List of dicts with keys: ticker, company_name, filing_type, filing_date, content
@@ -206,16 +229,16 @@ def fetch_filings_by_type(company, ticker, filing_type, n):
                 filings_list.append(filing_data)
 
             except Exception as e:
-                print(f"      ✗ Error extracting text from {filing_type} filing: {e}")
+                print(f"      Error extracting text from {filing_type} filing: {e}")
                 continue
 
         if len(filings_list) > 0:
-            print(f"    ✓ Fetched {len(filings_list)} {filing_type} filings")
+            print(f"    Fetched {len(filings_list)} {filing_type} filings")
         else:
-            print(f"    ✗ No {filing_type} filings found")
+            print(f"    No {filing_type} filings found")
 
     except Exception as e:
-        print(f"    ✗ Error fetching {filing_type} filings: {e}")
+        print(f"    Error fetching {filing_type} filings: {e}")
 
     return filings_list
 
@@ -236,11 +259,11 @@ def save_filing(filing_data, ticker, filing_type):
         return True
 
     except Exception as e:
-        print(f"    ✗ Error saving filing: {e}")
+        print(f"    Error saving filing: {e}")
         return False
 
 
-def download_sec_data(tickers):
+def download_sec_data():
     """
     Main orchestrator: Download and save SEC filings for given tickers.
     """
@@ -251,7 +274,7 @@ def download_sec_data(tickers):
     # Track statistics for manifest
     stats = {}
 
-    for ticker in tickers:
+    for ticker in COMPANIES.keys():
         print(f"\nProcessing {ticker}...")
 
         try:
@@ -275,20 +298,16 @@ def download_sec_data(tickers):
                     save_filing(filing, ticker, filing_type)
 
         except Exception as e:
-            print(f"  ✗ Error processing {ticker}: {e}")
+            print(f"  Error downloading SEC data for {ticker}: {e}")
             stats[ticker]["filings"] = {"error": str(e)}
 
     # Save manifest
     save_manifest(stats)
-    print("\n" + "="*70)
-    print("SEC DATA COLLECTION COMPLETE")
-    print("="*70 + "\n")
+    print("\nSEC DATA COLLECTION COMPLETE")
 
 
 def save_manifest(stats, ect_counts=None):
-    """
-    Save manifest.json with metadata about downloaded filings and ECT data.
-    """
+    """Save manifest.json with metadata about downloaded filings and ECT data."""
     try:
         # Calculate totals for SEC filings
         total_sec_filings = 0
@@ -318,30 +337,26 @@ def save_manifest(stats, ect_counts=None):
         with open(manifest_path, 'w') as f:
             json.dump(manifest, f, indent=2)
 
-        print(f"✓ Manifest saved to {manifest_path}")
+        print(f"Manifest saved to {manifest_path}")
 
     except Exception as e:
-        print(f"✗ Error saving manifest: {e}")
+        print(f"Error saving manifest: {e}")
 
 if __name__ == "__main__":
-    # Set up directories
-    TICKERS = ["AAPL", "AMD"]
-    setup_directories(TICKERS)
 
-    # Download SEC filings
-    download_sec_data(TICKERS)
+    start = time.perf_counter()
+
+    print(f"Fetching data for tickers: {', '.join(COMPANIES.keys())}")
+    
+    setup_directories()
+    download_sec_data()
 
     # Download ECT data
-    print("\n" + "="*70)
-    print("EARNINGS CALL TRANSCRIPTS DATA COLLECTION")
-    print("="*70 + "\n")
-
-    dataset_path = download_ect_dataset()
-    ect_data = fetch_ect_for_companies(dataset_path, TICKERS)
+    ect_data = fetch_ect_for_companies()
     save_ect_filings(ect_data)
 
     # Count ECT records per ticker
-    ect_counts = {ticker: len(ect_data.get(ticker, [])) for ticker in TICKERS}
+    ect_counts = {ticker: len(ect_data.get(ticker, [])) for ticker in COMPANIES.keys()}
 
     # Update manifest with ECT data
     # Note: save_manifest is called in download_sec_data, need to update it there
@@ -350,6 +365,7 @@ if __name__ == "__main__":
         manifest_path = Path("data/manifest.json")
         with open(manifest_path, 'r') as f:
             manifest = json.load(f)
+
         manifest["ect_data"] = ect_counts
         manifest["totals"] = {
             "sec_filings": manifest.get("totals", {}).get("sec_filings", 30),
@@ -358,10 +374,10 @@ if __name__ == "__main__":
         }
         with open(manifest_path, 'w') as f:
             json.dump(manifest, f, indent=2)
-        print(f"✓ Manifest updated with ECT data")
-    except Exception as e:
-        print(f"✗ Error updating manifest: {e}")
 
-    print("\n" + "="*70)
-    print("ECT DATA COLLECTION COMPLETE")
-    print("="*70 + "\n")
+        print(f"Manifest updated with ECT data")
+    except Exception as e:
+        print(f"Error updating manifest: {e}")
+
+    end = time.perf_counter()
+    print(f"\nECT DATA COLLECTION COMPLETE (Time taken: {end - start:.2f} seconds)")
