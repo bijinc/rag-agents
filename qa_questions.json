@@ -1,29 +1,111 @@
 
 {
-    "AAPL": [
-        "What was the reported revenue in Q1 2024?",
-        "What was the net income for Apple in Q1 2024?",
-        "How much did revenue grow compared to Q1 2023?",
-        "What was the flagship product that contributed the most to revenue in Q1 2024?",
-        "What was the revenue from Mac sales in Q1 2024?",
-        "Which product categories have significant growth in Q1 2024 compared to Q2 2024?",
-        "Records were set in which countries and regions in Q1 2024 for Apple?"
-    ],
-    "AMD": [
-        "What was the net income for AMD in Q2 2024?",
-        "What was the reported revenue for AMD in Q1 2024?"
-    ],
-    "COST": [
-        "What was the gross profit for Costco in Q1 2024?"
-    ],
+    "AAPL": [],
+    "AMD": [],
+    "COST": [],
     "JPM": [
-        "What was the total revenue for JPMorgan Chase in Q1 2024?",
-        "What was the net income for JPMorgan Chase in Q1 2024?"
+        {
+            "question": "What was the total revenue for JPMorgan Chase in Q3 2024?",
+            "answer": "The total revenue for JPMorgan Chase in Q3 2024 was $43.3 billion.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "What was the net income for JPMorgan Chase in Q3 2024?",
+            "answer": "The net income for JPMorgan Chase in Q3 2024 was $12.9 billion, with EPS of $4.37.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "What was JPMorgan's updated full-year 2024 NII ex-Markets guidance as of Q3?",
+            "answer": "JPMorgan's updated full-year 2024 NII ex-Markets guidance as of Q3 was approximately $91.5 billion.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "By how much did JPMorgan increase its quarterly common stock dividend, and when did it take effect?",
+            "answer": "JPMorgan increased its quarterly common stock dividend from $1.15 to $1.25 per share, effective Q3 2024. This represented a 19% increase year-over-year.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "How did JPMorgan's Investment Banking fees trend across Q1, Q2, and Q3 2024 on a year-over-year basis?",
+            "answer": "Q1: up 27% YoY; Q2: up 50% YoY; Q3: up 31% YoY. The trend shows a strong peak in Q2 followed by a moderation but still elevated performance in Q3.",
+            "difficulty": "L2"
+        },
+        {
+            "question": "How did JPMorgan's Assets Under Management (AUM) in the Asset & Wealth Management segment change from Q1 to Q3 2024?",
+            "answer": "Q1: $3.6 trillion (up 19% YoY); Q2: $3.7 trillion (up 15% YoY); Q3: $3.9 trillion (up 23% YoY). AUM grew steadily across all three quarters.",
+            "difficulty": "L2"
+        },
+        {
+            "question": "How did JPMorgan's CET1 ratio evolve across Q1, Q2, and Q3 2024, and what were the primary drivers of each change?",
+            "answer": "Q1: 15.0% (flat vs. prior quarter; net income offset by higher RWA and capital distributions); Q2: 15.3% (up 30 bps; net income partially offset by capital distributions and higher RWA); Q3: 15.3% (flat; net income and OCI gains offset by capital distributions and higher RWA).",
+            "difficulty": "L2"
+        },
+        {
+            "question": "How did the full-year adjusted expense outlook change between Q1 and Q3 2024, and what drove the revisions?",
+            "answer": "Q1: ~$91 billion (revised up from prior guidance due to increased FDIC special assessment); Q2: ~$92 billion; Q3: ~$91.5 billion. The Q1 increase was driven by the FDIC special assessment tied to SVB/Signature Bank closures.",
+            "difficulty": "L2"
+        }
     ],
     "F": [
-        "What was the operating income for Ford in Q1 2024?"
+        {
+            "question": "What was Ford's adjusted EBIT and EBIT margin for Q1 2024?",
+            "answer": "The adjusted EBIT for Ford in Q1 2024 was $2.8 billion, with an EBIT margin of 6.5%.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "What was Ford Model e's net loss in Q1 2024, and what was the primary cause cited by management?",
+            "answer": "Ford Model e's net loss in Q1 2024 was $1.3 billion, driven primarily by intense industry pricing pressure that more than offset flat costs and cost-reduction actions.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "What was Ford's cash position and total liquidity at the end of Q1 2024?",
+            "answer": "Ford's cash position at the end of Q1 2024 was approximately $25 billion, with total liquidity of approximately $43 billion.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "By how much did Ford Pro's EBIT grow year-over-year in Q1 2024, and what was its EBIT margin?",
+            "answer": "Ford Pro's EBIT doubled in Q1 2024 to $3 billion, with an EBIT margin of 16.7%.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "What ZEV credit purchase commitment did Ford disclose in its most recent 10-K at the time of the Q1 2024 earnings call?",
+            "answer": "Ford disclosed a ZEV credit purchase commitment of approximately $700 million in the annual 10-K.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "What was Ford's adjusted free cash flow guidance range entering Q2 2024, and how did it change by the end of Q2?",
+            "answer": "Entering Q2 2024, Ford's adjusted free cash flow guidance range was approximately $6.5 billion to $7.5 billion. By the end of Q2, the guidance was raised to $7.5 billion to $8.5 billion.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "How many paid software subscribers did Ford have as of Q2 2024, and what was the year-over-year growth rate?",
+            "answer": "As of Q2 2024, Ford had approximately 765,000 paid subscriptions, representing a year-over-year growth rate of 40%.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "What J.D. Power Initial Quality ranking improvement did Ford report in Q2 2024, and what specific vehicle won a segment award?",
+            "answer": "Ford improved 14 points and moved from 23rd to 9th in the industry. Bronco Sport was named best small utility in initial quality, outperforming 18 competitors.",
+            "difficulty": "L1"
+        },
+        {
+            "question": "How did Ford Model e's losses and cost trajectory evolve between Q1 and Q2 2024, and what does management's full-year guidance imply about the back half of the year?",
+            "answer": "In Q1 2024, Ford Model e's net loss was $1.3 billion, driven by intense pricing pressure. In Q2 2024, the net loss improved to $1.1 billion, with the team delivering approximately $400 million in cost savings. The full-year guidance implies approximately $2.6 billion to $3.1 billion in combined H2 losses, roughly in line with or modestly better than H1, suggesting limited further improvement without new product tailwinds.",
+            "difficulty": "L2"
+        },
+        {
+            "question": "How did Ford Pro's revenue growth rate, EBIT, and EBIT margin change from Q1 to Q2 2024, and what factors drove the sequential decline in profitability?",
+            "answer": "In Q1 2024, Ford Pro's revenue grew 36% year-over-year, with an EBIT of $3 billion and an EBIT margin of 16.7%. In Q2 2024, revenue growth was 9% year-over-year, with EBIT declining to $2.6 billion and the EBIT margin at around 15%. The sequential step-down in both EBIT and margin was driven by lower wholesale volume growth and more moderate net pricing, partially offset by continued Super Duty and Transit capacity constraints. Management noted Q1's exceptional result was partly structural and not a sustainable run rate.",
+            "difficulty": "L2"
+        },
+        {
+            "question": "How did Ford's full-year segment guidance for Ford Blue change between Q1 and Q2 2024, and what drove the revision?",
+            "answer": "In Q1 2024, Ford's full-year segment guidance for Ford Blue was approximately $7 billion to $7.5 billion in EBIT. By the end of Q2, the guidance was revised down to approximately $6 billion to $6.5 billion in EBIT. The revision was driven by higher-than-expected warranty costs tied to new technologies, field service actions (FSAs), and inflationary repair cost pressures, partially offset by anticipated H2 volume improvements from completed F-150, Explorer, and Ranger launches.",
+            "difficulty": "L2"
+        },
+        {
+            "question": "How did Ford's hybrid sales growth rate and global hybrid mix evolve from Q1 to Q2 2024, and how did management's commentary on the hybrid opportunity shift between the two calls?",
+            "answer": "In Q1 2024, Ford's hybrid sales grew 36% year-over-year, with the global hybrid mix at approximately 7% of global volume. By Q2 2024, hybrid sales growth moderated to around 34% year-over-year, with the global hybrid mix increasing to approximately 9%. In Q1, management highlighted hybrid as a strategic choice complementing EVs, noting F-150 hybrid capacity being expanded to 25% of output. By Q2, the emphasis shifted more explicitly toward hybrid as a near-term volume and margin driver, with management citing hybrid pickups (Maverick and F-150) growing more than 3x the overall hybrid segment rate in H1, and flagging a $1 billion software revenue target that partially depends on hybrid vehicle connectivity.",
+            "difficulty": "L2"
+        }
     ],
-    "ELV": [
-        "What was the net income for Elevance Health in Q1 2024?"
-    ]
+    "ELV": []
 }
