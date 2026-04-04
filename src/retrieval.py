@@ -2,12 +2,13 @@ import chromadb
 from sentence_transformers import SentenceTransformer
 from rank_bm25 import BM25Okapi
 from dataclasses import dataclass
+from pathlib import Path
 
 ##############################################################################
 #                              CONFIGURATION                                 #
 ##############################################################################
 
-CHROMA_DB_PATH = "data/chroma_db"
+CHROMA_DB_PATH = str(Path(__file__).resolve().parent.parent / "data" / "chroma_db")
 COLLECTION_NAME = "financial_docs"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 RRF_K = 60       # constant from the original RRF paper (Cormack et al. 2009)

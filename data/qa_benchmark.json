@@ -1,0 +1,765 @@
+[
+  {
+    "id": "1d86d983",
+    "question": "What was Apple's total net revenue for fiscal year 2024?",
+    "answer": "$391.04 billion",
+    "supporting_passage": "The following table summarizes net sales by reportable segment ... Total net sales $391,035",
+    "source_refs": [
+      "sec_filings/AAPL/10-K/10-K_20241101.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-03-31"
+  },
+  {
+    "id": "a9105a0f",
+    "question": "What was Apple's total revenue in Q3 FY2024?",
+    "answer": "$85.777 billion (approximately $85.8 billion), up 5% year-over-year",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "d8345791",
+    "question": "What was Apple's gross margin percentage in Q3 FY2024?",
+    "answer": "46.3%, near the high end of guidance range",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "f0933450",
+    "question": "What was Apple's total revenue in Q2 FY2024?",
+    "answer": "$90.753 billion (approximately $90.8 billion), down 4% year-over-year",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-Q/10-Q_20240503.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "6868d075",
+    "question": "How much did Services revenue grow year-over-year in Q3 FY2024?",
+    "answer": "14% year-over-year, reaching $24.2 billion (all-time high)",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "c9814dd6",
+    "question": "What was iPhone revenue in Q2 FY2024?",
+    "answer": "$45.963 billion (approximately $46 billion), down 10% year-over-year",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-Q/10-Q_20240503.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "bcb129ea",
+    "question": "How much did Apple return to shareholders in Q3 FY2024 through dividends and buybacks?",
+    "answer": "Over $32 billion ($3.9 billion in dividends and equivalents, $26 billion through open market repurchases of 139 million shares)",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "7f60cbda",
+    "question": "What new share repurchase authorization did Apple announce in Q2 FY2024?",
+    "answer": "$110 billion additional share repurchase authorization, announced by the Board of Directors",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "67a06367",
+    "question": "What was the foreign exchange headwind impact on Q3 FY2024 revenue?",
+    "answer": "230 basis points (2.3%) negative year-over-year impact on revenue",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "f0b2bd2f",
+    "question": "What was Services gross margin percentage in Q3 FY2023?",
+    "answer": "70.5%",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2023_Q3.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "18170d24",
+    "question": "How many paid subscriptions does Apple have across its Services platform?",
+    "answer": "Well over 1 billion paid subscriptions, more than double the number from 4 years ago",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "dd1b72bb",
+    "question": "What was Apple's net income in Q3 FY2024?",
+    "answer": "$21.448 billion with diluted EPS of $1.40, up 11% year-over-year",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "0bba37dc",
+    "question": "What percentage of Apple's trade receivables came from third-party cellular network carriers as of June 29, 2024?",
+    "answer": "32% (down from 41% as of September 30, 2023)",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json"
+    ],
+    "difficulty": "L1",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "706e7448",
+    "question": "Compare Apple's total revenue growth rate in Q2 FY2024 vs Q3 FY2024. What drove the difference?",
+    "answer": "Q2 FY2024: Revenue down 4% YoY ($90.8B vs $94.8B). Q3 FY2024: Revenue up 5% YoY ($85.8B vs $81.8B). Key drivers: (1) Q2 had difficult compare due to ~$5B pent-up iPhone demand recovery in prior year from COVID supply disruptions, (2) Q3 benefited from iPad launch (+24% YoY), (3) Services continued strong double-digit growth, (4) FX headwind lessened (140 bps Q2 vs 230 bps Q3, but Q3 FY2023 had 400 bps headwind making easier compare)",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L2",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "b91bed7f",
+    "question": "How did Services gross margin percentage change from Q3 FY2023 to Q3 FY2024?",
+    "answer": "Improved from 70.5% to 74.0%, a +350 basis point increase. The improvement was driven primarily by a more favorable Services mix.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2023_Q3.json",
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json"
+    ],
+    "difficulty": "L2",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "d6f1e056",
+    "question": "Compare iPad revenue performance across Q2 FY2024 and Q3 FY2024. What explains the divergence?",
+    "answer": "Q2 FY2024: $5.6B (-17% YoY). Q3 FY2024: $7.2B (+24% YoY). The dramatic swing is due to: (1) Q2 had difficult compare vs M2 iPad Pro and iPad 10th gen launch in prior year, (2) Q3 benefited from new iPad Pro (M4) and iPad Air launch in May 2024. Nine-month FY2024 iPad revenue was $19.7B (-10% YoY) reflecting weak H1.",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-Q/10-Q_20240503.json",
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json"
+    ],
+    "difficulty": "L2",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "85f8c516",
+    "question": "How did Greater China revenue trend across the first three quarters of FY2024?",
+    "answer": "H1 FY2024 (Q1+Q2): Steeper YoY decline (double-digits, -8% in Q2). Q3 FY2024: -6.5% YoY (or -3% constant currency). Tim Cook noted Q3 showed 'improvement from the first half' and was 'pleased to see the acceleration.' Over 50% of Q3 YoY decline was FX-related. iPhone grew in Mainland China on a reported basis.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L2",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "0d98dc78",
+    "question": "Compare the foreign exchange headwind impact on revenue across Q3 FY2023, Q2 FY2024, and Q3 FY2024.",
+    "answer": "Q3 FY2023: ~400 bps (nearly 4 percentage points) negative impact. Q2 FY2024: 140 bps negative impact. Q3 FY2024: 230 bps negative impact. Trend: FX headwinds have moderated significantly from the severe Q3 FY2023 levels, though they remain a drag on reported results.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2023_Q3.json",
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L2",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "9539be77",
+    "question": "How did R&D expense as a percentage of revenue change from FY2023 to the first nine months of FY2024?",
+    "answer": "FY2023 (full year): $29.9B / $383.3B = 7.8%. Nine months FY2024: $23.6B / $296.1B = 8.0%. R&D expense is growing faster than revenue, reflecting continued investment in innovation including AI/ML and Apple Intelligence.",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-K/10-K_20241101.json",
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json"
+    ],
+    "difficulty": "L2",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "9d8ac506",
+    "question": "How has management's narrative around AI evolved from Q3 FY2023 to Q3 FY2024?",
+    "answer": "Q3 FY2023: Tim Cook mentioned AI/ML as 'core fundamental technologies integral to virtually every product,' referenced existing AI features (fall detection, crash detection), stated Apple is 'doing research across a wide range of AI technologies, including generative AI,' but was vague ('we tend to announce things as they come to market'). Q2 FY2024: More bullish tone - 'very bullish about our opportunity in generative AI,' 'making significant investments,' highlighted hardware/software integration and privacy as differentiators. Q3 FY2024: Apple Intelligence formally announced at WWDC with detailed features (Writing Tools, Image Playground, enhanced Siri), specific hardware requirements (iPhone 15 Pro+, M-series), Private Cloud Compute introduced, ChatGPT integration announced. Evolution: Defensive/vague \u2192 building anticipation \u2192 full product reveal with monetization implications.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2023_Q3.json",
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L3",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "altered_guidance",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "1036d494",
+    "question": "Based on management commentary across multiple quarters, what is Apple's strategy for the China market?",
+    "answer": "Consistent themes across Q2-Q3 FY2024: (1) Long-term confidence despite short-term challenges - Tim Cook repeatedly stated 'I maintain a great view of China in the long term'; (2) Acknowledge competitive intensity - called China 'the most competitive market in the world'; (3) Focus on new customer acquisition - majority of Mac/iPad buyers are first-time purchasers, 'vast majority' of Watch buyers are new; (4) Highlight relative performance metrics - iPhone 15 outperforming iPhone 14 at same weeks from launch, top-selling smartphones in urban China per Kantar; (5) FX contextualization - consistently note >50% of YoY decline is currency-related; (6) Local engagement - Tim Cook visited China, opened new store in Shanghai. Strategic implication: Apple is playing a long game, prioritizing installed base growth and customer acquisition over short-term revenue optimization.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L3",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "altered_guidance",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "3dd8e7bd",
+    "question": "What explains the contrast between Apple's declining Products revenue and expanding gross margins in FY2024?",
+    "answer": "The paradox: Nine months FY2024 Products revenue $224.9B (down from $230.9B, -3%), yet Products gross margin improved (37.5% vs 36.5% prior year). Explanatory factors: (1) Favorable cost environment - Luca Maestri noted 'commodity costs behaved favorably,' most commodities declining except memory; (2) Mix shift toward Services - Services (74% margin) growing faster than Products (35% margin); (3) Products mix within Products - strong performance at 'top of the range,' iPhone Pro models maintaining ASPs, financing programs enabling premium purchases; (4) Cost savings initiatives - explicit mention as gross margin driver; (5) Volume deleveraging being offset - normally lower volume = lower margins, but cost savings and mix more than compensating.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json",
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json"
+    ],
+    "difficulty": "L3",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "altered_guidance",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "21202269",
+    "question": "How has management characterized the Vision Pro opportunity across its first two quarters of availability?",
+    "answer": "Q2 FY2024 (Launch quarter): 'Thrilled to launch Apple Vision Pro,' 'magic of spatial computing,' enterprise enthusiasm with 'more than half of Fortune 100 companies have already bought units,' diverse use cases (KLM aircraft maintenance, Lowe's kitchen design, healthcare). Q3 FY2024: 'Gaining traction' with AR capabilities, 2,500+ native spatial apps and 1.5 million compatible apps, 'great interest in enterprise,' expanding to more countries, highlighted Boston Children's Hospital and Lufthansa for workforce training. Pattern: Heavily enterprise-focused positioning, ecosystem growth metrics emphasized, NO revenue or unit figures disclosed, geographic expansion narrative, consistent 'early days but exciting' framing. Notable absence: No discussion of consumer adoption rates, revenue contribution, or comparison to expectations.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L3",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "altered_guidance",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "f81b38a5",
+    "question": "What is the implied trajectory of Apple's effective tax rate and what factors are driving it?",
+    "answer": "Tax rate trend: FY2023 full year: 14.7%. Q2 FY2024: 15.8%. Q3 FY2024: 15.9%. Q3 FY2023: 12.5%. Upward pressure factors (per 10-Q disclosures): (1) Higher effective tax rate on foreign earnings, (2) Lower tax benefits from share-based compensation, (3) Changes to international tax rules (OECD global minimum tax initiatives). Downward pressure factors: U.S. federal R&D credit, lower state income taxes (partial offset), geographic mix of earnings. Implied trajectory: Modestly rising effective tax rate due to international tax environment changes, though still well below 21% statutory rate due to foreign earnings profile.",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-K/10-K_20241101.json",
+      "sec_filings/AAPL/10-Q/10-Q_20240503.json",
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json"
+    ],
+    "difficulty": "L3",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "altered_guidance",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "8691e760",
+    "question": "In Q2 FY2024, management guided for Q3 revenue to 'grow low single digits' with iPad growing 'double digits.' Did Q3 results meet, beat, or miss this guidance?",
+    "answer": "Q2 Guidance (for Q3): Total revenue 'low single digits' growth YoY, iPad 'double digits' growth, Services 'double digits' at rate similar to H1 (~14%), FX headwind ~2.5 percentage points. Q3 Actual Results: Total revenue +5% YoY ($85.8B vs $81.8B), iPad +24% YoY, Services +14% YoY, FX headwind 2.3 percentage points. Assessment: Total revenue BEAT (5% is at high end of 'low single digits'), iPad MET (24% is solidly double-digit), Services MET (14% consistent with H1 rate), FX SLIGHTLY BETTER (2.3% vs 2.5% expected headwind). Luca Maestri noted results were 'better than we had expected.'",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L4",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "multi_source",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "7a93ec40",
+    "question": "Compare the risk factor disclosures related to the App Store in the FY2023 10-K vs the Q2 FY2024 10-Q. What new risks emerged?",
+    "answer": "FY2023 10-K: General discussion of DMA requiring compliance by March 2024, mentions potential changes to developer communications/distribution/fees, notes Epic litigation with ongoing appeals. Q2 FY2024 10-Q Updates (NEW developments): (1) DMA Investigations - March 25, 2024 Commission opened TWO formal noncompliance investigations on Article 5(4) (developer communication) and Article 6(3) (default settings, browser choice), potential penalty up to 10% of worldwide annual net sales; (2) DOJ Lawsuit - March 21, 2024 DOJ + 16 state AGs filed antitrust lawsuit alleging monopolization in 'performance smartphones' and 'smartphones' markets seeking equitable relief; (3) Epic Compliance Dispute - January 2024 Apple implemented compliance plan, March 2024 Epic filed motion disputing compliance. Risk escalation: Material escalation from theoretical regulatory risk (10-K) to active investigations and litigation with quantified penalty exposure.",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-K/10-K_20241101.json",
+      "sec_filings/AAPL/10-Q/10-Q_20240503.json"
+    ],
+    "difficulty": "L4",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "multi_source",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "4c4caea2",
+    "question": "Management attributed Q2 FY2024's iPhone revenue decline (-10% YoY) largely to a $5 billion 'one-time impact' in the prior year. Is this explanation consistent with Q3 FY2024 iPhone performance?",
+    "answer": "The explanation: Q2 FY2023 had ~$5B of 'pent-up demand' fulfillment from COVID-related supply disruptions on iPhone 14 Pro/Pro Max. Tim Cook stated 'If we removed this from last year's results, our March quarter total company revenue would have grown.' Luca noted 'Adjusting for this onetime impact, iPhone revenue would be roughly flat.' Testing against Q3: Q3 FY2024 iPhone was -1% YoY ($39.3B vs $39.7B). Q3 FY2023 did NOT have the same pent-up demand dynamic, yet iPhone still declined slightly. Consistency check: The $5B explanation is specific to Q2's difficult compare. Q3's -1% decline (despite no pent-up demand compare) is consistent with FX headwinds (grew in constant currency per management), competitive pressure in China, and upgrade cycle timing ahead of new iPhone launch. Conclusion: The explanation is internally consistent.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L4",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "multi_source",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "57ee7fd6",
+    "question": "The FY2023 10-K discloses that Apple's manufacturing is 'located primarily in China mainland, India, Japan, South Korea, Taiwan and Vietnam.' Has management commentary on supply chain diversification evolved from FY2023 to FY2024?",
+    "answer": "FY2023 10-K disclosure: Standard risk factor language about manufacturing concentration, notes 'significant concentration performed by a small number of outsourcing partners, often in single locations,' lists China mainland, India, Japan, South Korea, Taiwan, Vietnam. Q2 FY2024 Earnings Call (India discussion): Tim Cook explicitly stated 'From a pragmatic point of view, you need to produce there to be competitive,' confirmed 'We are producing there,' noted strong double-digit revenue growth in India, new retail stores opened. Implied evolution: (1) India manufacturing is now explicitly confirmed as operational (not just planned), (2) 'Need to produce there to be competitive' signals strategic necessity not just diversification, (3) 10-K language remains appropriately cautious while call commentary confirms India production is happening, (4) No explicit discussion of China manufacturing reduction but India expansion is clear.",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-K/10-K_20241101.json",
+      "ect/AAPL/2024_Q2.json"
+    ],
+    "difficulty": "L4",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "multi_source",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "aabe4627",
+    "question": "Compare how management discussed 'generative AI' monetization/business model in Q2 FY2024 vs Q3 FY2024. How specific did they become?",
+    "answer": "Q2 FY2024 (pre-WWDC): Tim Cook stated 'I don't want to get in front of our announcements,' 'we see generative AI as a very key opportunity across our products,' declined to specify monetization model, no specifics on device requirements or services pricing. Q3 FY2024 (post-WWDC): Apple Intelligence formally announced with hardware requirements disclosed (iPhone 15 Pro/Pro Max, M-series Macs/iPads) creating upgrade incentive, privacy architecture detailed (on-device + Private Cloud Compute), ChatGPT integration 'by end of calendar year,' Tim Cook on commercial terms: 'I don't want to get into the terms of the commercial agreements because they're confidential,' on Services implications: 'I see both aspects as being very important.' Evolution: Significantly more specific on product requirements and partnership structure; still opaque on direct monetization/revenue model.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L4",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "multi_source",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "cd66b7f2",
+    "question": "The Q3 FY2024 10-Q shows restricted marketable securities of $14.1 billion related to the State Aid Decision. Using both the 10-Q and earnings call, assess the timeline and risk profile of this matter.",
+    "answer": "From Q3 FY2024 10-Q (Note 6): \u20ac13.1 billion recovery amount plus \u20ac1.2 billion interest originally, adjusted to \u20ac12.7 billion as of September 2023, $14.1 billion restricted in escrow, General Court annulled State Aid Decision (July 2020), Commission appealed to ECJ, hearing held May 23, 2023, decision expected Q4 2024 (imminent), Apple believes it could claim U.S. foreign tax credit for portion of any Irish taxes due. From Q3 FY2024 Earnings Call: NOT DISCUSSED - notably absent from prepared remarks or Q&A, no analyst questions despite imminent ECJ decision. Risk assessment: Materiality is significant ($14.1B = ~21% of FY2023 net income), timing is imminent (within months), binary outcome (win or pay), mitigation exists (partial U.S. tax credit), management gave zero proactive discussion, prior ruling was favorable (General Court). Conclusion: Material, imminent, binary-outcome risk that management chose not to address proactively.",
+    "supporting_passage": null,
+    "source_refs": [
+      "sec_filings/AAPL/10-Q/10-Q_20240802.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L4",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "multi_source",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "bdc45967",
+    "question": "How did management's gross margin guidance accuracy trend from Q2 to Q3 FY2024?",
+    "answer": "Q2 FY2024: Guidance was 45.5%-46.5%, Actual was 46.6% (slightly above high end, +10 bps). Q3 FY2024: Guidance was 45.5%-46.5%, Actual was 46.3% (within range, near high end). Q4 FY2024 Guidance: 45.5%-46.5% (pending). Pattern: Apple consistently guides to a 100 bps range (45.5%-46.5%) and has delivered at or above the high end in recent quarters, suggesting either conservative guidance or consistent execution on cost savings and mix. Drivers enabling high-end performance: Cost savings (per Luca Maestri), Services mix shift (74% margin vs 35% Products), favorable commodities (except memory).",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2024_Q2.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L4",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "multi_source",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "e2f3a4b5",
+    "question": "Cross-reference the Q3 FY2023 and Q3 FY2024 earnings calls. How did the Services growth narrative evolve, and what new drivers emerged?",
+    "answer": "Q3 FY2023 Services: Revenue $21.2 billion (+8% YoY, accelerated sequentially), records in cloud/video/AppleCare/payments (all-time) and App Store/advertising/Music (June quarter), just passed 1 billion paid subscriptions milestone, 2 billion+ active devices installed base. Q3 FY2024 Services: Revenue $24.2 billion (+14% YoY), all-time records in advertising/cloud/payment services, 'well over 1 billion' paid subscriptions (>2x from 4 years ago), transacting accounts and paid accounts both at all-time highs with double-digit growth. Growth rate evolution: Q3 FY2023 +8% YoY \u2192 Q3 FY2024 +14% YoY. New/emphasized drivers in Q3 FY2024: (1) Advertising now explicitly called out as growth driver, (2) Engagement metrics more emphasis on 'transacting accounts' and 'paid accounts,' (3) EU App Store noted as only 7% of total (risk mitigation framing). Narrative shift: From emphasizing milestone (1B subscriptions) and diversity to emphasizing acceleration, engagement depth, and sustainability of double-digit growth.",
+    "supporting_passage": null,
+    "source_refs": [
+      "ect/AAPL/2023_Q3.json",
+      "ect/AAPL/2024_Q3.json"
+    ],
+    "difficulty": "L4",
+    "tickers": [
+      "AAPL"
+    ],
+    "hallucination_type": "multi_source",
+    "created": "2026-04-02"
+  },
+  {
+    "id": "94863d87",
+    "question": "What was the total revenue for JPMorgan Chase in Q3 2024?",
+    "answer": "The total revenue for JPMorgan Chase in Q3 2024 was $43.3 billion.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "JPM"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "5022c41e",
+    "question": "What was the net income for JPMorgan Chase in Q3 2024?",
+    "answer": "The net income for JPMorgan Chase in Q3 2024 was $12.9 billion, with EPS of $4.37.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "JPM"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "8a79e655",
+    "question": "What was JPMorgan's updated full-year 2024 NII ex-Markets guidance as of Q3?",
+    "answer": "JPMorgan's updated full-year 2024 NII ex-Markets guidance as of Q3 was approximately $91.5 billion.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "JPM"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "a66c7b9a",
+    "question": "By how much did JPMorgan increase its quarterly common stock dividend, and when did it take effect?",
+    "answer": "JPMorgan increased its quarterly common stock dividend from $1.15 to $1.25 per share, effective Q3 2024. This represented a 19% increase year-over-year.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "JPM"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "f3479cfc",
+    "question": "How did JPMorgan's Investment Banking fees trend across Q1, Q2, and Q3 2024 on a year-over-year basis?",
+    "answer": "Q1: up 27% YoY; Q2: up 50% YoY; Q3: up 31% YoY. The trend shows a strong peak in Q2 followed by a moderation but still elevated performance in Q3.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L2",
+    "tickers": [
+      "JPM"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "c64a0c19",
+    "question": "How did JPMorgan's Assets Under Management (AUM) in the Asset & Wealth Management segment change from Q1 to Q3 2024?",
+    "answer": "Q1: $3.6 trillion (up 19% YoY); Q2: $3.7 trillion (up 15% YoY); Q3: $3.9 trillion (up 23% YoY). AUM grew steadily across all three quarters.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L2",
+    "tickers": [
+      "JPM"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "8d0cae98",
+    "question": "How did JPMorgan's CET1 ratio evolve across Q1, Q2, and Q3 2024, and what were the primary drivers of each change?",
+    "answer": "Q1: 15.0% (flat vs. prior quarter; net income offset by higher RWA and capital distributions); Q2: 15.3% (up 30 bps; net income partially offset by capital distributions and higher RWA); Q3: 15.3% (flat; net income and OCI gains offset by capital distributions and higher RWA).",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L2",
+    "tickers": [
+      "JPM"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "870ca6bd",
+    "question": "How did the full-year adjusted expense outlook change between Q1 and Q3 2024, and what drove the revisions?",
+    "answer": "Q1: ~$91 billion (revised up from prior guidance due to increased FDIC special assessment); Q2: ~$92 billion; Q3: ~$91.5 billion. The Q1 increase was driven by the FDIC special assessment tied to SVB/Signature Bank closures.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L2",
+    "tickers": [
+      "JPM"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "e54655a7",
+    "question": "What was Ford's adjusted EBIT and EBIT margin for Q1 2024?",
+    "answer": "The adjusted EBIT for Ford in Q1 2024 was $2.8 billion, with an EBIT margin of 6.5%.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "10fd2bab",
+    "question": "What was Ford Model e's net loss in Q1 2024, and what was the primary cause cited by management?",
+    "answer": "Ford Model e's net loss in Q1 2024 was $1.3 billion, driven primarily by intense industry pricing pressure that more than offset flat costs and cost-reduction actions.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "e26ca386",
+    "question": "What was Ford's cash position and total liquidity at the end of Q1 2024?",
+    "answer": "Ford's cash position at the end of Q1 2024 was approximately $25 billion, with total liquidity of approximately $43 billion.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "6e5f53b1",
+    "question": "By how much did Ford Pro's EBIT grow year-over-year in Q1 2024, and what was its EBIT margin?",
+    "answer": "Ford Pro's EBIT doubled in Q1 2024 to $3 billion, with an EBIT margin of 16.7%.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "d88fa56d",
+    "question": "What ZEV credit purchase commitment did Ford disclose in its most recent 10-K at the time of the Q1 2024 earnings call?",
+    "answer": "Ford disclosed a ZEV credit purchase commitment of approximately $700 million in the annual 10-K.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "d1f57961",
+    "question": "What was Ford's adjusted free cash flow guidance range entering Q2 2024, and how did it change by the end of Q2?",
+    "answer": "Entering Q2 2024, Ford's adjusted free cash flow guidance range was approximately $6.5 billion to $7.5 billion. By the end of Q2, the guidance was raised to $7.5 billion to $8.5 billion.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "2a7a1397",
+    "question": "How many paid software subscribers did Ford have as of Q2 2024, and what was the year-over-year growth rate?",
+    "answer": "As of Q2 2024, Ford had approximately 765,000 paid subscriptions, representing a year-over-year growth rate of 40%.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "109d8b60",
+    "question": "What J.D. Power Initial Quality ranking improvement did Ford report in Q2 2024, and what specific vehicle won a segment award?",
+    "answer": "Ford improved 14 points and moved from 23rd to 9th in the industry. Bronco Sport was named best small utility in initial quality, outperforming 18 competitors.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L1",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "fabricated_figure",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "53670fb8",
+    "question": "How did Ford Model e's losses and cost trajectory evolve between Q1 and Q2 2024, and what does management's full-year guidance imply about the back half of the year?",
+    "answer": "In Q1 2024, Ford Model e's net loss was $1.3 billion, driven by intense pricing pressure. In Q2 2024, the net loss improved to $1.1 billion, with the team delivering approximately $400 million in cost savings. The full-year guidance implies approximately $2.6 billion to $3.1 billion in combined H2 losses, roughly in line with or modestly better than H1, suggesting limited further improvement without new product tailwinds.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L2",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "38ae5264",
+    "question": "How did Ford Pro's revenue growth rate, EBIT, and EBIT margin change from Q1 to Q2 2024, and what factors drove the sequential decline in profitability?",
+    "answer": "In Q1 2024, Ford Pro's revenue grew 36% year-over-year, with an EBIT of $3 billion and an EBIT margin of 16.7%. In Q2 2024, revenue growth was 9% year-over-year, with EBIT declining to $2.6 billion and the EBIT margin at around 15%. The sequential step-down in both EBIT and margin was driven by lower wholesale volume growth and more moderate net pricing, partially offset by continued Super Duty and Transit capacity constraints.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L2",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "faa154de",
+    "question": "How did Ford's full-year segment guidance for Ford Blue change between Q1 and Q2 2024, and what drove the revision?",
+    "answer": "In Q1 2024, Ford's full-year segment guidance for Ford Blue was approximately $7 billion to $7.5 billion in EBIT. By the end of Q2, the guidance was revised down to approximately $6 billion to $6.5 billion in EBIT. The revision was driven by higher-than-expected warranty costs tied to new technologies, field service actions (FSAs), and inflationary repair cost pressures.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L2",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-04"
+  },
+  {
+    "id": "c923d8bc",
+    "question": "How did Ford's hybrid sales growth rate and global hybrid mix evolve from Q1 to Q2 2024, and how did management's commentary on the hybrid opportunity shift between the two calls?",
+    "answer": "In Q1 2024, Ford's hybrid sales grew 36% year-over-year, with the global hybrid mix at approximately 7% of global volume. By Q2 2024, hybrid sales growth moderated to around 34% year-over-year, with the global hybrid mix increasing to approximately 9%. In Q1, management highlighted hybrid as a strategic choice complementing EVs. By Q2, the emphasis shifted more explicitly toward hybrid as a near-term volume and margin driver.",
+    "supporting_passage": null,
+    "source_refs": [],
+    "difficulty": "L2",
+    "tickers": [
+      "F"
+    ],
+    "hallucination_type": "temporal_confusion",
+    "created": "2026-04-04"
+  }
+]
