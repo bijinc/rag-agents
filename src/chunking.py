@@ -4,6 +4,7 @@ import tiktoken
 import chromadb
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
+from constants import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DB_PATH
 
 ##############################################################################
 #                              CONFIGURATION                                 #
@@ -12,9 +13,6 @@ from sentence_transformers import SentenceTransformer
 CHUNK_SIZE = 512  # tokens per chunk
 OVERLAP = 50      # overlap tokens between chunks
 BATCH_SIZE = 64   # for embedding batches
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-CHROMA_DB_PATH = "data/chroma_db"
-COLLECTION_NAME = "financial_docs"
 
 ##############################################################################
 #                          DOCUMENT LOADING                                  #
@@ -49,7 +47,7 @@ def load_documents():
                         doc["source_type"] = "sec_filing"
                         documents.append(doc)
                     except Exception as e:
-                        print(f"  ✗ Error loading {json_file}: {e}")
+                        print(f"  Error loading {json_file}: {e}")
                         continue
 
     # Load ECT transcripts
@@ -104,18 +102,20 @@ def chunk_text(text, chunk_size=CHUNK_SIZE, overlap=OVERLAP):
 
     return chunks
 
-def create_chunks(doc):
+def create_chunks(doc, chunk_size, overlap):
     """
     Create chunk dicts from a single document.
 
     Args:
         doc: Document dict with 'content' and metadata fields
+        chunk_size: Target chunk size in tokens
+        overlap: Overlap in tokens between consecutive chunks
 
     Returns:
         list of chunk dicts with metadata
     """
     # Get text chunks
-    text_chunks = chunk_text(doc["content"], CHUNK_SIZE, OVERLAP)
+    text_chunks = chunk_text(doc["content"], chunk_size, overlap)
     chunks = []
 
     # Build chunk ID based on source type
@@ -173,22 +173,22 @@ def build_index(chunk_size=CHUNK_SIZE, overlap=OVERLAP):
     sec_count = len([d for d in documents if d.get("source_type") == "sec_filing"])
     ect_count = len([d for d in documents if d.get("source_type") == "ect"])
 
-    print(f"  ✓ Loaded {sec_count} SEC filings")
-    print(f"  ✓ Loaded {ect_count} ECT transcripts")
+    print(f"  Loaded {sec_count} SEC filings")
+    print(f"  Loaded {ect_count} ECT transcripts")
     print(f"  Total: {len(documents)} documents\n")
 
     # Step 2: Create chunks
     print("Chunking documents...")
     all_chunks = []
     for doc in documents:
-        chunks = create_chunks(doc)
+        chunks = create_chunks(doc, chunk_size, overlap)
         all_chunks.extend(chunks)
 
     sec_chunks = len([c for c in all_chunks if c.get("source_type") == "sec_filing"])
     ect_chunks = len([c for c in all_chunks if c.get("source_type") == "ect"])
 
-    print(f"  ✓ Created {sec_chunks} chunks from SEC filings")
-    print(f"  ✓ Created {ect_chunks} chunks from ECT transcripts")
+    print(f"  Created {sec_chunks} chunks from SEC filings")
+    print(f"  Created {ect_chunks} chunks from ECT transcripts")
     print(f"  Total: {len(all_chunks)} chunks\n")
 
     # Step 3: Initialize ChromaDB
@@ -207,7 +207,7 @@ def build_index(chunk_size=CHUNK_SIZE, overlap=OVERLAP):
     # Step 4: Initialize embedding model
     print(f"Loading embedding model: {EMBEDDING_MODEL}...")
     model = SentenceTransformer(EMBEDDING_MODEL)
-    print(f"  ✓ Model loaded (384 dimensions)\n")
+    print(f"  Model loaded (384 dimensions)\n")
 
     # Step 5: Embed and upsert in batches
     print("Embedding and indexing chunks...")

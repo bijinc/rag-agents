@@ -4,13 +4,14 @@ from rank_bm25 import BM25Okapi
 from dataclasses import dataclass
 from pathlib import Path
 
+from constants import EMBEDDING_MODEL
+
 ##############################################################################
 #                              CONFIGURATION                                 #
 ##############################################################################
 
-CHROMA_DB_PATH = str(Path(__file__).resolve().parent.parent / "data" / "chroma_db")
-COLLECTION_NAME = "financial_docs"
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+# CHROMA_DB_PATH = str(Path(__file__).resolve().parent.parent / "data" / "chroma_db")
+
 RRF_K = 60       # constant from the original RRF paper (Cormack et al. 2009)
 DEFAULT_TOP_K = 5
 
