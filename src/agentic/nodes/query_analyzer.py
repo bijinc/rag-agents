@@ -10,7 +10,7 @@ and builds SearchFilters for targeted retrieval.
 import json
 from openai import OpenAI
 from src.retrieval import SearchFilters
-from src.nodes.llm_utils import llm_call
+from src.agentic.nodes.llm_utils import llm_call
 
 ##############################################################################
 #                              PROMPTS                                       #

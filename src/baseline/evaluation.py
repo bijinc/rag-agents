@@ -23,7 +23,7 @@ from openai import OpenAI
 
 load_dotenv()
 
-from src.pipeline import RAGPipeline, PipelineResult
+from src.baseline.pipeline import RAGPipeline, PipelineResult
 
 ##############################################################################
 #                              CONFIGURATION                                 #

@@ -32,12 +32,12 @@ from typing_extensions import TypedDict
 load_dotenv()
 
 from src.retrieval import Retriever, RetrievedChunk, SearchFilters
-from src.nodes.query_analyzer    import query_analyzer_node
-from src.nodes.retriever_node    import retriever_node
-from src.nodes.sufficiency_checker import sufficiency_checker_node, route_sufficiency
-from src.nodes.query_refiner     import query_refiner_node
-from src.nodes.generator_node    import generator_node
-from src.nodes.faithfulness_gate import faithfulness_gate_node
+from src.agentic.nodes.query_analyzer    import query_analyzer_node
+from src.agentic.nodes.retriever_node    import retriever_node
+from src.agentic.nodes.sufficiency_checker import sufficiency_checker_node, route_sufficiency
+from src.agentic.nodes.query_refiner     import query_refiner_node
+from src.agentic.nodes.generator_node    import generator_node
+from src.agentic.nodes.faithfulness_gate import faithfulness_gate_node
 
 ##############################################################################
 #                              CONFIGURATION                                 #

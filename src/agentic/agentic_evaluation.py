@@ -31,8 +31,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from src.agentic_pipeline import AgenticPipeline, AgenticResult
-from src.evaluation import run_ragas, run_llm_judge, EvalRecord
+from src.agentic.agentic_pipeline import AgenticPipeline, AgenticResult
+from src.baseline.evaluation import run_ragas, run_llm_judge, EvalRecord
 
 ##############################################################################
 #                              CONFIGURATION                                 #

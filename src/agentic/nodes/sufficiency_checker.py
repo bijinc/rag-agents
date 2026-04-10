@@ -10,7 +10,7 @@ function used by the LangGraph graph.
 import json
 from openai import OpenAI
 from src.retrieval import RetrievedChunk
-from src.nodes.llm_utils import llm_call
+from src.agentic.nodes.llm_utils import llm_call
 
 ##############################################################################
 #                              PROMPTS                                       #
