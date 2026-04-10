@@ -6,14 +6,6 @@ from sentence_transformers import SentenceTransformer
 from constants import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DB_PATH
 
 ##############################################################################
-#                              CONFIGURATION                                 #
-##############################################################################
-
-CHUNK_SIZE = 512  # tokens per chunk
-OVERLAP = 50      # overlap tokens between chunks
-BATCH_SIZE = 64   # for embedding batches
-
-##############################################################################
 #                          DOCUMENT LOADING                                  #
 ##############################################################################
 
@@ -53,7 +45,7 @@ def load_documents():
 #                              CHUNKING                                      #
 ##############################################################################
 
-def chunk_text(text, chunk_size=CHUNK_SIZE, overlap=OVERLAP):
+def chunk_text(text, chunk_size, overlap):
     """
     Split text into token-based chunks with overlap.
 
@@ -137,13 +129,7 @@ def create_chunks(doc, chunk_size, overlap):
 #                         EMBEDDING & INDEXING                               #
 ##############################################################################
 
-def build_index(chunk_size=CHUNK_SIZE, overlap=OVERLAP):
-    """
-    Main orchestrator: load documents, chunk, embed, and index in ChromaDB.
-    """
-    print("\n" + "="*70)
-    print("CHUNKING AND EMBEDDING PHASE")
-    print("="*70 + "\n")
+def build_index(chunk_size, overlap):
 
     # Step 1: Load documents
     print("Loading documents...")
@@ -181,12 +167,11 @@ def build_index(chunk_size=CHUNK_SIZE, overlap=OVERLAP):
         pass
 
     collection = client.create_collection(COLLECTION_NAME)
-    print(f"  ✓ Created ChromaDB collection: {COLLECTION_NAME}\n")
+    print(f"  Created ChromaDB collection: {COLLECTION_NAME}\n")
 
     # Step 4: Initialize embedding model
     print(f"Loading embedding model: {EMBEDDING_MODEL}...")
     model = SentenceTransformer(EMBEDDING_MODEL)
-    print(f"  Model loaded (384 dimensions)\n")
 
     # Step 5: Embed and upsert in batches
     print("Embedding and indexing chunks...")
@@ -233,9 +218,9 @@ def build_index(chunk_size=CHUNK_SIZE, overlap=OVERLAP):
         batch_num_display = (batch_num // BATCH_SIZE) + 1
         print(f"  [{batch_num_display:3d}/{total_batches:3d}] Embedded {len(batch_chunks):3d} chunks")
 
-    print(f"\n✓ Indexed {len(all_chunks)} chunks into ChromaDB")
-    print(f"✓ Collection: {COLLECTION_NAME}")
-    print(f"✓ Persistent storage: {CHROMA_DB_PATH}/\n")
+    print(f"\nIndexed {len(all_chunks)} chunks into ChromaDB")
+    print(f"Collection: {COLLECTION_NAME}")
+    print(f"Persistent storage: {CHROMA_DB_PATH}/\n")
 
     # Step 6: Print summary
     print("="*70)
@@ -246,12 +231,4 @@ def build_index(chunk_size=CHUNK_SIZE, overlap=OVERLAP):
     print(f"  Chunks: {len(all_chunks)}")
     print(f"  Embedding model: {EMBEDDING_MODEL} (384 dimensions)")
     print(f"  Vector store: ChromaDB at {CHROMA_DB_PATH}/")
-    print(f"  Collection: {COLLECTION_NAME}")
-    print()
-
-##############################################################################
-#                              MAIN                                          #
-##############################################################################
-
-if __name__ == "__main__":
-    build_index(CHUNK_SIZE, OVERLAP)
+    print(f"  Collection: {COLLECTION_NAME}\n")
