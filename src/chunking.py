@@ -1,4 +1,3 @@
-import os
 import json
 import tiktoken
 import chromadb
@@ -27,46 +26,26 @@ def load_documents():
     """
     documents = []
 
+    def append_json_docs(pattern, source_type, error_prefix):
+        for json_file in pattern:
+            try:
+                with open(json_file, "r", encoding="utf-8") as f:
+                    doc = json.load(f)
+                doc["source_type"] = source_type
+                documents.append(doc)
+            except Exception as e:
+                print(f"  {error_prefix} {json_file}: {e}")
+                continue
+
     # Load SEC filings
     sec_path = Path("data/raw/sec_filings")
     if sec_path.exists():
-        for ticker_dir in sec_path.iterdir():
-            if not ticker_dir.is_dir():
-                continue
-            ticker = ticker_dir.name
-
-            for filing_type_dir in ticker_dir.iterdir():
-                if not filing_type_dir.is_dir():
-                    continue
-                filing_type = filing_type_dir.name
-
-                for json_file in filing_type_dir.glob("*.json"):
-                    try:
-                        with open(json_file, 'r', encoding='utf-8') as f:
-                            doc = json.load(f)
-                        doc["source_type"] = "sec_filing"
-                        documents.append(doc)
-                    except Exception as e:
-                        print(f"  Error loading {json_file}: {e}")
-                        continue
+        append_json_docs(sec_path.glob("*/*/*.json"), "sec_filing", "Error loading SEC filing")
 
     # Load ECT transcripts
     ect_path = Path("data/raw/ect")
     if ect_path.exists():
-        for ticker_dir in ect_path.iterdir():
-            if not ticker_dir.is_dir():
-                continue
-            ticker = ticker_dir.name
-
-            for json_file in ticker_dir.glob("*.json"):
-                try:
-                    with open(json_file, 'r', encoding='utf-8') as f:
-                        doc = json.load(f)
-                    doc["source_type"] = "ect"
-                    documents.append(doc)
-                except Exception as e:
-                    print(f"  ✗ Error loading {json_file}: {e}")
-                    continue
+        append_json_docs(ect_path.glob("*/*.json"), "ect", "Error loading ECT transcript")
 
     return documents
 
