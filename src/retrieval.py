@@ -4,7 +4,7 @@ from rank_bm25 import BM25Okapi
 from dataclasses import dataclass
 from pathlib import Path
 
-from constants import EMBEDDING_MODEL
+from constants import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DB_PATH
 
 ##############################################################################
 #                              CONFIGURATION                                 #
