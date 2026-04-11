@@ -1,16 +1,15 @@
-"""src/nodes/query_analyzer.py
-
+"""
 LangGraph node: Query Analyzer
 
-Decomposes the user question into focused sub-questions, extracts
-metadata (tickers, filing type, source type), classifies difficulty,
-and builds SearchFilters for targeted retrieval.
+Decomposes the user question into focused sub-questions, extracts metadata (tickers, filing type, source type), 
+classifies difficulty, and builds SearchFilters for targeted retrieval.
 """
 
 import json
 from openai import OpenAI
 from src.retrieval import SearchFilters
 from src.agentic.nodes.llm_utils import llm_call
+from src.constants import GENERATOR_MODEL
 
 ##############################################################################
 #                              PROMPTS                                       #
@@ -55,7 +54,7 @@ def query_analyzer_node(state: dict, client: OpenAI) -> dict:
     try:
         raw = llm_call(
             client,
-            model="qwen/qwen-2.5-7b-instruct",
+            model=GENERATOR_MODEL,
             max_tokens=400,
             temperature=0.0,
             messages=[

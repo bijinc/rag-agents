@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from openai import OpenAI
 from dotenv import load_dotenv
 from src.retrieval import Retriever, RetrievedChunk, SearchFilters
-from src.constants import OPENROUTER_BASE_URL
+from src.constants import OPENROUTER_BASE_URL, MODELS, DEFAULT_MODEL
 
 ##############################################################################
 #                              CONFIGURATION                                 #
@@ -11,13 +11,6 @@ from src.constants import OPENROUTER_BASE_URL
 
 # load OpenRouter API key
 load_dotenv()
-
-# Models available via OpenRouter — swap by changing DEFAULT_MODEL
-MODELS = {
-    "qwen":  "qwen/qwen-2.5-7b-instruct",
-    "llama": "meta-llama/llama-3-8b-instruct",
-}
-DEFAULT_MODEL = "qwen"
 
 DEFAULT_TOP_K = 5
 MAX_TOKENS    = 1024
@@ -198,9 +191,9 @@ class RAGPipeline:
         return results
 
 
-if __name__ == "__main__":
+def test_pipeline():
     # Tests one question from each difficulty tier
-    pipeline = RAGPipeline(model="qwen")
+    pipeline = RAGPipeline(model=DEFAULT_MODEL)
 
     test_questions = [
         # L1 — direct extraction

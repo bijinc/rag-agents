@@ -1,20 +1,15 @@
-"""src/nodes/faithfulness_gate.py
-
+"""
 LangGraph node: Faithfulness Gate
 
-Uses a separate LLM (Llama-3.1-8b, same as the evaluator in evaluation.py)
-to check whether the generated answer is faithful to the retrieved context.
-Answers that fail the check are flagged with low confidence — they are still
-returned so the caller can decide what to do.
+Uses a separate LLM to check whether the generated answer is faithful to the retrieved context.
+Answers that fail the check are flagged with low confidence — they are still returned so the caller can decide what to do.
 """
 
 import json
 from openai import OpenAI
 from src.retrieval import RetrievedChunk
 from src.agentic.nodes.llm_utils import llm_call
-
-# Use a different model from the generator (Llama vs Qwen) for independence
-EVALUATOR_MODEL = "meta-llama/llama-3.1-8b-instruct"
+from src.constants import EVALUATOR_MODEL
 
 ##############################################################################
 #                              PROMPTS                                       #
@@ -40,7 +35,6 @@ GENERATED ANSWER:
 {answer}
 
 Is this answer faithful to the passages?"""
-
 
 ##############################################################################
 #                              HELPERS                                       #

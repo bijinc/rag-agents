@@ -1,7 +1,4 @@
-"""src/agentic_evaluation.py
-
-RQ2 evaluation: Does agentic RAG reduce hallucination vs single-pass baseline?
-
+"""
 Runs the AgenticPipeline on the same QA benchmark used by evaluation.py,
 then applies the same RAGAS faithfulness and LLM-as-judge metrics so results
 are directly comparable.
@@ -22,24 +19,20 @@ Usage:
 
 import argparse
 import json
-import os
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-
 from dotenv import load_dotenv
 
-load_dotenv()
-
-from src.agentic.agentic_pipeline import AgenticPipeline, AgenticResult
+from src.constants import GENERATOR_MODEL, EVALUATOR_MODEL
+from src.agentic.agentic_pipeline import DEFAULT_MODEL, AgenticPipeline, AgenticResult
 from src.baseline.evaluation import run_ragas, run_llm_judge, EvalRecord
 
 ##############################################################################
 #                              CONFIGURATION                                 #
 ##############################################################################
 
-GENERATOR_MODEL = "qwen/qwen-2.5-7b-instruct"
-EVALUATOR_MODEL = "meta-llama/llama-3.1-8b-instruct"
+load_dotenv()
 
 BENCHMARK_PATH = "data/qa_benchmark.json"
 RESULTS_PATH   = "data/agentic_eval_results.json"
@@ -73,7 +66,7 @@ def run_agentic_pipeline(
     with open(benchmark_path) as f:
         benchmark = json.load(f)
 
-    pipeline = AgenticPipeline(model="qwen")
+    pipeline = AgenticPipeline(model=DEFAULT_MODEL)
     records: list[AgenticEvalRecord] = []
 
     print(f"\nRunning agentic pipeline on {len(benchmark)} questions  [generator: {GENERATOR_MODEL}]")

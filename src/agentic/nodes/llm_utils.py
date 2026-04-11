@@ -1,13 +1,6 @@
-"""src/nodes/llm_utils.py
-
-Shared LLM call helper with one automatic retry on empty response.
-Empty responses happen when OpenRouter rate-limits silently instead
-of returning a proper 429 error.
-"""
 
 import time
 from openai import OpenAI
-
 
 def llm_call(client: OpenAI, *, model: str, messages: list, max_tokens: int, temperature: float = 0.0) -> str:
     """

@@ -1,15 +1,3 @@
-"""src/evaluation.py
-
-RQ1 evaluation: RAGAS faithfulness vs LLM-as-judge hallucination detection.
-
-Generator  : qwen/qwen-2.5-7b-instruct        (via OpenRouter)
-Evaluator  : meta-llama/llama-3.1-8b-instruct  (via OpenRouter, different from generator)
-
-Usage:
-    python -m src.evaluation
-    python -m src.evaluation --skip-ragas       # judge only
-    python -m src.evaluation --skip-judge       # RAGAS only
-"""
 
 import argparse
 import json
@@ -17,25 +5,20 @@ import os
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
-
+from src.constants import OPENROUTER_BASE_URL, GENERATOR_MODEL, EVALUATOR_MODEL
 from src.baseline.pipeline import RAGPipeline, PipelineResult
 
 ##############################################################################
 #                              CONFIGURATION                                 #
 ##############################################################################
 
-OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-
-GENERATOR_MODEL = "qwen/qwen-2.5-7b-instruct"
-EVALUATOR_MODEL = "meta-llama/llama-3.1-8b-instruct"
+load_dotenv()
 
 BENCHMARK_PATH = "data/qa_benchmark.json"
-RESULTS_PATH   = "data/eval_results.json"
+RESULTS_PATH   = "data/baseline_eval_results.json"
 TOP_K          = 5
 
 ##############################################################################

@@ -1,9 +1,5 @@
-"""src/agentic_pipeline.py
-
+"""
 Agentic RAG pipeline using LangGraph.
-
-Compared against the single-pass RAGPipeline (src/pipeline.py) for RQ2:
-"Does agentic retrieval reduce hallucination rates?"
 
 Graph:
     START
@@ -15,23 +11,18 @@ Graph:
       → generator            (generate grounded answer)
       → faithfulness_gate    (flag answers not grounded in context)
       → END
-
-Usage:
-    python -m src.agentic_pipeline
 """
 
 import os
 from dataclasses import dataclass
 from typing import Any
-
 from dotenv import load_dotenv
 from openai import OpenAI
 from langgraph.graph import StateGraph, START, END
 from typing_extensions import TypedDict
 
-load_dotenv()
-
-from src.retrieval import Retriever, RetrievedChunk, SearchFilters
+from src.constants import OPENROUTER_BASE_URL, MODELS, DEFAULT_MODEL
+from src.retrieval import Retriever, RetrievedChunk
 from src.agentic.nodes.query_analyzer    import query_analyzer_node
 from src.agentic.nodes.retriever_node    import retriever_node
 from src.agentic.nodes.sufficiency_checker import sufficiency_checker_node, route_sufficiency
@@ -39,17 +30,7 @@ from src.agentic.nodes.query_refiner     import query_refiner_node
 from src.agentic.nodes.generator_node    import generator_node
 from src.agentic.nodes.faithfulness_gate import faithfulness_gate_node
 
-##############################################################################
-#                              CONFIGURATION                                 #
-##############################################################################
-
-OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-
-MODELS = {
-    "qwen":  "qwen/qwen-2.5-7b-instruct",
-    "llama": "meta-llama/llama-3-8b-instruct",
-}
-DEFAULT_MODEL = "qwen"
+load_dotenv()
 
 ##############################################################################
 #                              LANGGRAPH STATE                               #
@@ -105,9 +86,6 @@ class AgenticPipeline:
       - Query decomposition (query_analyzer)
       - Retrieval sufficiency checking with up to 2 retries (sufficiency_checker + query_refiner)
       - Faithfulness gating on the generated answer (faithfulness_gate)
-
-    The baseline pipeline (src/pipeline.py) runs the same retrieval and
-    generation without any of these agentic layers.
     """
 
     def __init__(
