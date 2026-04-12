@@ -21,7 +21,7 @@ from openai import OpenAI
 from langgraph.graph import StateGraph, START, END
 from typing_extensions import TypedDict
 
-from src.constants import OPENROUTER_BASE_URL, MODELS, DEFAULT_MODEL
+from src.constants import OPENROUTER_BASE_URL, MODELS, DEFAULT_MODEL, EVALUATOR_MODEL
 from src.retrieval import Retriever, RetrievedChunk
 from src.agentic.nodes.query_analyzer    import query_analyzer_node
 from src.agentic.nodes.retriever_node    import retriever_node
@@ -51,7 +51,8 @@ class AgentState(TypedDict):
     # Generation
     answer:               str
     # Faithfulness
-    is_faithful:          bool
+    is_faithful:          bool | None
+    node_errors:          dict[str, str]
     confidence:           str          # "high" | "low"
     faithfulness_reasoning: str | None
 
@@ -69,11 +70,12 @@ class AgenticResult:
     retrieved_chunks:       list[RetrievedChunk]
     contexts:               list[str]     # plain text per chunk (for RAGAS)
     retrieval_attempts:     int
-    is_faithful:            bool
+    is_faithful:            bool | None
     confidence:             str
     faithfulness_reasoning: str | None
     question_type:          str
     model:                  str
+    node_errors:            dict[str, str]
 
 
 ##############################################################################
@@ -91,6 +93,7 @@ class AgenticPipeline:
     def __init__(
         self,
         model: str = DEFAULT_MODEL,
+        evaluator_model: str = EVALUATOR_MODEL,
         retriever: Retriever | None = None,
     ):
         api_key = os.environ.get("OPENROUTER_API_KEY")
@@ -102,6 +105,7 @@ class AgenticPipeline:
 
         self._client    = OpenAI(api_key=api_key, base_url=OPENROUTER_BASE_URL)
         self._model     = MODELS.get(model, model)
+        self._evaluator_model = MODELS.get(evaluator_model, evaluator_model)
         self._retriever = retriever or Retriever()
         self._graph     = self._build_graph()
 
@@ -114,22 +118,22 @@ class AgenticPipeline:
 
         # Each closure captures self._client / self._retriever / self._model
         def _query_analyzer(state):
-            return query_analyzer_node(state, self._client)
+            return query_analyzer_node(state, self._client, self._model)
 
         def _retriever(state):
             return retriever_node(state, self._retriever)
 
         def _sufficiency_checker(state):
-            return sufficiency_checker_node(state, self._client)
+            return sufficiency_checker_node(state, self._client, self._model)
 
         def _query_refiner(state):
-            return query_refiner_node(state, self._client)
+            return query_refiner_node(state, self._client, self._model)
 
         def _generator(state):
             return generator_node(state, self._client, self._model)
 
         def _faithfulness_gate(state):
-            return faithfulness_gate_node(state, self._client)
+            return faithfulness_gate_node(state, self._client, self._evaluator_model)
 
         # Build and connect the graph
         graph = StateGraph(AgentState)
@@ -179,6 +183,7 @@ class AgenticPipeline:
             "sufficiency":           "sufficient",
             "answer":                "",
             "is_faithful":           True,
+            "node_errors":           {},
             "confidence":            "high",
             "faithfulness_reasoning": None,
         }
@@ -198,6 +203,7 @@ class AgenticPipeline:
             faithfulness_reasoning = final_state["faithfulness_reasoning"],
             question_type          = final_state["question_type"],
             model                  = self._model,
+            node_errors            = final_state.get("node_errors", {}),
         )
 
         print(f"{'─'*65}")
@@ -205,6 +211,8 @@ class AgenticPipeline:
         print(f"  Sub-questions : {result.sub_questions}")
         print(f"  Chunks        : {len(result.retrieved_chunks)} ({result.retrieval_attempts} retries)")
         print(f"  Faithful      : {result.is_faithful} (confidence={result.confidence})")
+        if result.node_errors:
+            print(f"  Node errors   : {', '.join(result.node_errors)}")
         print(f"  Answer        : {result.answer[:150]}...")
         print(f"{'='*65}\n")
 
