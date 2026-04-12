@@ -1,5 +1,4 @@
-"""src/nodes/generator_node.py
-
+"""
 LangGraph node: Generator
 
 Formats retrieved chunks into a numbered context block and calls the
@@ -9,6 +8,7 @@ baseline RAGPipeline to ensure a fair comparison.
 
 from openai import OpenAI
 from src.retrieval import RetrievedChunk
+from src.agentic.nodes.llm_utils import llm_call
 
 ##############################################################################
 #                              CONFIGURATION                                 #
@@ -61,15 +61,25 @@ def generator_node(state: dict, client: OpenAI, model: str) -> dict:
     context_str  = _format_context(chunks)
     user_message = f"Source passages:\n\n{context_str}\n\nQuestion: {question}"
 
-    response = client.chat.completions.create(
-        model=model,
-        max_tokens=MAX_TOKENS,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user",   "content": user_message},
-        ],
-    )
-    answer = response.choices[0].message.content.strip()
+    try:
+        answer = llm_call(
+            client,
+            model=model,
+            max_tokens=MAX_TOKENS,
+            temperature=0.0,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_message},
+            ],
+            timeout_sec=45.0,
+            max_retries=3,
+        )
+    except Exception as exc:  # noqa: BLE001
+        answer = "The retrieved context does not contain sufficient information to answer this question."
+        node_errors = dict(state.get("node_errors", {}))
+        node_errors["generator"] = str(exc)
+        print(f"  [generator] WARNING: generation failed ({exc})")
+        return {"answer": answer, "node_errors": node_errors}
 
     print(f"  [generator] Generated {len(answer)} chars using {len(chunks)} chunks")
 

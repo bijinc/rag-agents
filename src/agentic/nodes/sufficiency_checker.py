@@ -1,16 +1,13 @@
-"""src/nodes/sufficiency_checker.py
-
+"""
 LangGraph node: Sufficiency Checker
 
-Asks the LLM whether the retrieved chunks contain enough information
-to answer the question. Also provides the conditional edge routing
-function used by the LangGraph graph.
+Asks the LLM whether the retrieved chunks contain enough information to answer the question.
+Also provides the conditional edge routing function used by the LangGraph graph.
 """
 
-import json
 from openai import OpenAI
 from src.retrieval import RetrievedChunk
-from src.agentic.nodes.llm_utils import llm_call
+from src.agentic.nodes.llm_utils import llm_call, parse_json_response
 
 ##############################################################################
 #                              PROMPTS                                       #
@@ -60,7 +57,7 @@ def _format_context_preview(chunks: list[RetrievedChunk], max_chars: int = 3000)
 #                              NODE                                          #
 ##############################################################################
 
-def sufficiency_checker_node(state: dict, client: OpenAI) -> dict:
+def sufficiency_checker_node(state: dict, client: OpenAI, model: str) -> dict:
     """
     Evaluate whether retrieved chunks are sufficient to answer the question.
 
@@ -78,7 +75,7 @@ def sufficiency_checker_node(state: dict, client: OpenAI) -> dict:
     try:
         raw = llm_call(
             client,
-            model="qwen/qwen-2.5-7b-instruct",
+            model=model,
             max_tokens=150,
             temperature=0.0,
             messages=[
@@ -89,13 +86,7 @@ def sufficiency_checker_node(state: dict, client: OpenAI) -> dict:
                 )},
             ],
         )
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-            raw = raw.rstrip("`").strip()
-
-        verdict      = json.loads(raw)
+        verdict = parse_json_response(raw, required_keys={"sufficient", "reason"})
         is_sufficient = bool(verdict.get("sufficient", True))
         reason        = verdict.get("reason", "")
 
@@ -104,9 +95,13 @@ def sufficiency_checker_node(state: dict, client: OpenAI) -> dict:
         return {"sufficiency": result}
 
     except Exception as e:
-        # On LLM failure, default to sufficient to avoid infinite loops
-        print(f"  [sufficiency_checker] WARNING: LLM failed ({e}), defaulting to sufficient")
-        return {"sufficiency": "sufficient"}
+        print(f"  [sufficiency_checker] WARNING: LLM failed ({e}), marking insufficient")
+        node_errors = dict(state.get("node_errors", {}))
+        node_errors["sufficiency_checker"] = str(e)
+        return {
+            "sufficiency": "insufficient",
+            "node_errors": node_errors,
+        }
 
 
 ##############################################################################

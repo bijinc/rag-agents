@@ -5,10 +5,9 @@ Uses a separate LLM to check whether the generated answer is faithful to the ret
 Answers that fail the check are flagged with low confidence — they are still returned so the caller can decide what to do.
 """
 
-import json
 from openai import OpenAI
 from src.retrieval import RetrievedChunk
-from src.agentic.nodes.llm_utils import llm_call
+from src.agentic.nodes.llm_utils import llm_call, parse_json_response
 from src.constants import EVALUATOR_MODEL
 
 ##############################################################################
@@ -61,7 +60,7 @@ def _format_context_preview(chunks: list[RetrievedChunk], max_chars: int = 4000)
 #                              NODE                                          #
 ##############################################################################
 
-def faithfulness_gate_node(state: dict, client: OpenAI) -> dict:
+def faithfulness_gate_node(state: dict, client: OpenAI, model: str = EVALUATOR_MODEL) -> dict:
     """
     Check whether the generated answer is grounded in the retrieved context.
 
@@ -76,7 +75,7 @@ def faithfulness_gate_node(state: dict, client: OpenAI) -> dict:
     try:
         raw = llm_call(
             client,
-            model=EVALUATOR_MODEL,
+            model=model,
             max_tokens=200,
             temperature=0.0,
             messages=[
@@ -88,13 +87,7 @@ def faithfulness_gate_node(state: dict, client: OpenAI) -> dict:
                 )},
             ],
         )
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-            raw = raw.rstrip("`").strip()
-
-        verdict     = json.loads(raw)
+        verdict = parse_json_response(raw, required_keys={"faithful", "confidence", "reasoning"})
         is_faithful = bool(verdict.get("faithful", True))
         confidence  = verdict.get("confidence", "high")
         reasoning   = verdict.get("reasoning", "")
@@ -103,11 +96,18 @@ def faithfulness_gate_node(state: dict, client: OpenAI) -> dict:
         print(f"  [faithfulness_gate] {status} (confidence={confidence}) — {reasoning}")
 
     except Exception as e:
-        # Gate failure: assume faithful with low confidence rather than blocking
-        print(f"  [faithfulness_gate] WARNING: LLM failed ({e}), defaulting to faithful/low")
-        is_faithful = True
+        print(f"  [faithfulness_gate] WARNING: LLM failed ({e}), marking unknown")
+        is_faithful = None
         confidence  = "low"
         reasoning   = f"Gate unavailable: {e}"
+        node_errors = dict(state.get("node_errors", {}))
+        node_errors["faithfulness_gate"] = str(e)
+        return {
+            "is_faithful":            is_faithful,
+            "confidence":             confidence,
+            "faithfulness_reasoning": reasoning,
+            "node_errors":            node_errors,
+        }
 
     return {
         "is_faithful":           is_faithful,

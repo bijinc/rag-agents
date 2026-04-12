@@ -1,15 +1,13 @@
 """
 LangGraph node: Query Analyzer
 
-Decomposes the user question into focused sub-questions, extracts metadata (tickers, filing type, source type), 
+Decomposes the user question into focused sub-questions, extracts metadata (tickers, filing type, source type),
 classifies difficulty, and builds SearchFilters for targeted retrieval.
 """
 
-import json
 from openai import OpenAI
 from src.retrieval import SearchFilters
-from src.agentic.nodes.llm_utils import llm_call
-from src.constants import GENERATOR_MODEL
+from src.agentic.nodes.llm_utils import llm_call, parse_json_response
 
 ##############################################################################
 #                              PROMPTS                                       #
@@ -43,7 +41,7 @@ _USER = "Question: {question}"
 #                              NODE                                          #
 ##############################################################################
 
-def query_analyzer_node(state: dict, client: OpenAI) -> dict:
+def query_analyzer_node(state: dict, client: OpenAI, model: str) -> dict:
     """
     Decompose the question and extract retrieval metadata.
 
@@ -54,7 +52,7 @@ def query_analyzer_node(state: dict, client: OpenAI) -> dict:
     try:
         raw = llm_call(
             client,
-            model=GENERATOR_MODEL,
+            model=model,
             max_tokens=400,
             temperature=0.0,
             messages=[
@@ -63,14 +61,10 @@ def query_analyzer_node(state: dict, client: OpenAI) -> dict:
             ],
         )
 
-        # Strip markdown fences if the model adds them
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-            raw = raw.rstrip("`").strip()
-
-        parsed = json.loads(raw)
+        parsed = parse_json_response(
+            raw,
+            required_keys={"sub_questions", "tickers", "source_type", "filing_type", "question_type"},
+        )
 
         sub_questions = parsed.get("sub_questions") or [question]
         tickers       = parsed.get("tickers") or None
@@ -95,6 +89,15 @@ def query_analyzer_node(state: dict, client: OpenAI) -> dict:
         sub_questions = [question]
         filters       = None
         question_type = "L1"
+        node_errors = dict(state.get("node_errors", {}))
+        node_errors["query_analyzer"] = str(e)
+        return {
+            "sub_questions":     sub_questions,
+            "filters":           filters,
+            "question_type":     question_type,
+            "original_question": question,
+            "node_errors":       node_errors,
+        }
 
     return {
         "sub_questions":     sub_questions,

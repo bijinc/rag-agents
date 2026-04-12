@@ -1,5 +1,4 @@
-"""src/nodes/query_refiner.py
-
+"""
 LangGraph node: Query Refiner
 
 Called when retrieval was insufficient. Rephrases sub-questions to be
@@ -7,10 +6,9 @@ broader, relaxes filters, and increments the retrieval_attempts counter
 so the graph loops back to the retriever.
 """
 
-import json
 from openai import OpenAI
 from src.retrieval import SearchFilters
-from src.agentic.nodes.llm_utils import llm_call
+from src.agentic.nodes.llm_utils import llm_call, parse_json_response
 
 ##############################################################################
 #                              PROMPTS                                       #
@@ -37,7 +35,7 @@ Reformulate these as broader sub-questions that are more likely to match relevan
 #                              NODE                                          #
 ##############################################################################
 
-def query_refiner_node(state: dict, client: OpenAI) -> dict:
+def query_refiner_node(state: dict, client: OpenAI, model: str) -> dict:
     """
     Broaden sub-questions and relax filters for a retry retrieval pass.
 
@@ -51,7 +49,7 @@ def query_refiner_node(state: dict, client: OpenAI) -> dict:
     try:
         raw = llm_call(
             client,
-            model="qwen/qwen-2.5-7b-instruct",
+            model=model,
             max_tokens=200,
             temperature=0.3,
             messages=[
@@ -62,13 +60,7 @@ def query_refiner_node(state: dict, client: OpenAI) -> dict:
                 )},
             ],
         )
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-            raw = raw.rstrip("`").strip()
-
-        parsed            = json.loads(raw)
+        parsed = parse_json_response(raw, required_keys={"sub_questions"})
         new_sub_questions = parsed.get("sub_questions") or [question]
 
         print(f"  [query_refiner] Attempt {retrieval_attempts + 1}: {len(new_sub_questions)} sub-question(s)")
@@ -76,6 +68,14 @@ def query_refiner_node(state: dict, client: OpenAI) -> dict:
     except Exception as e:
         print(f"  [query_refiner] WARNING: LLM failed ({e}), falling back to original question")
         new_sub_questions = [question]
+        node_errors = dict(state.get("node_errors", {}))
+        node_errors["query_refiner"] = str(e)
+        return {
+            "sub_questions":      new_sub_questions,
+            "filters":            SearchFilters(tickers=current_filters.tickers) if current_filters and current_filters.tickers else None,
+            "retrieval_attempts": retrieval_attempts + 1,
+            "node_errors":        node_errors,
+        }
 
     # Relax filters: keep tickers but drop filing_type and source_type
     # to broaden the search across all document types

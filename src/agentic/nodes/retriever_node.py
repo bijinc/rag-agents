@@ -1,10 +1,8 @@
-"""src/nodes/retriever_node.py
-
+"""
 LangGraph node: Retriever
 
-Runs hybrid search (Dense + BM25 + RRF) for each sub-question,
-merges and deduplicates results. On retry, increases top_k and
-relaxes filing_type filter.
+Runs hybrid search (Dense + BM25 + RRF) for each sub-question, merges and deduplicates results.
+On retry, increases top_k and relaxes filing_type filter.
 """
 
 from src.retrieval import Retriever, RetrievedChunk, SearchFilters
