@@ -29,8 +29,6 @@ def _safe_str(value) -> str:
 def _classify_section(chunk_text: str, source_type: str) -> str:
     text = chunk_text.lower()
     if source_type == "sec_filing":
-        if re.search(r"total\s+net\s+sales|gross\s+margin|three\s+months\s+ended|nine\s+months\s+ended|products\s+and\s+services\s+net\s+sales", text):
-            return "financial_statements"
         if re.search(r"item\s+1a\b|risk\s+factors", text):
             return "risk_factors"
         if re.search(r"item\s+7\b|management'?s\s+discussion|md&a", text):
