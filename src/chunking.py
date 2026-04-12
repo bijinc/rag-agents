@@ -3,7 +3,7 @@ import tiktoken
 import chromadb
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
-from constants import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DB_PATH, BATCH_SIZE
+from src.constants import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DB_PATH, BATCH_SIZE
 
 ##############################################################################
 #                          DOCUMENT LOADING                                  #
