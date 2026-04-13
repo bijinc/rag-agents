@@ -1,6 +1,5 @@
 
 import argparse
-import json
 import os
 import random
 import time
@@ -10,7 +9,7 @@ from uuid import uuid4
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from src.constants import OPENROUTER_BASE_URL, GENERATOR_MODEL, EVALUATOR_MODEL
+from src.constants import OPENROUTER_BASE_URL, GENERATOR_MODEL, EVALUATOR_MODEL, DEFAULT_TOP_K, DEFAULT_SEED
 from src.baseline.pipeline import RAGPipeline, PipelineResult
 from src.eval_utils import (
     llm_call_with_retry,
@@ -30,8 +29,6 @@ load_dotenv()
 
 BENCHMARK_PATH = "data/qa_benchmark.json"
 RESULTS_PATH   = "data/baseline_eval_results.json"
-TOP_K          = 5
-DEFAULT_SEED   = 42
 NONE_SCORE_WARN_THRESHOLD = 0.10
 
 ##############################################################################
@@ -59,7 +56,7 @@ class EvalRecord:
     # metadata
     generator_model: str = GENERATOR_MODEL
     evaluator_model: str = EVALUATOR_MODEL
-    top_k: int = TOP_K
+    top_k: int = DEFAULT_TOP_K
     run_id: str = ""
     run_started_at: str = ""
     run_seed: int = DEFAULT_SEED
@@ -75,7 +72,7 @@ class EvalRecord:
 
 def run_pipeline(
     benchmark: list[dict],
-    top_k: int = TOP_K,
+    top_k: int = DEFAULT_TOP_K,
     run_metadata: dict | None = None,
 ) -> list[EvalRecord]:
     """Run the RAG pipeline on every benchmark question."""
@@ -335,7 +332,7 @@ def load_records(path: str) -> list[EvalRecord]:
 def evaluate_pipeline(
     benchmark_path: str = BENCHMARK_PATH,
     results_path: str   = RESULTS_PATH,
-    top_k: int          = TOP_K,
+    top_k: int          = DEFAULT_TOP_K,
     skip_ragas: bool    = False,
     skip_judge: bool    = False,
     judge_only: bool    = False,
@@ -387,7 +384,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip-ragas",  action="store_true", help="Skip RAGAS faithfulness step")
     parser.add_argument("--skip-judge",  action="store_true", help="Skip LLM-as-judge step")
     parser.add_argument("--judge-only",  action="store_true", help="Load existing results and run only the judge")
-    parser.add_argument("--top-k",       type=int, default=TOP_K)
+    parser.add_argument("--top-k",       type=int, default=DEFAULT_TOP_K)
     parser.add_argument("--benchmark",   default=BENCHMARK_PATH)
     parser.add_argument("--output",      default=RESULTS_PATH)
     parser.add_argument("--max-questions", type=int, default=None)
