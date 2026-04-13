@@ -8,7 +8,7 @@ from chonkie import SemanticChunker
 from chonkie.embeddings import SentenceTransformerEmbeddings
 
 from src.constants import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DB_PATH
-from src.finance_domain import normalize_ticker
+from src.finance_domain import normalize_ticker, normalize_fiscal_quarter, canonical_period_key, parse_year_quarter
 
 SEC_CHUNK_SIZE = 864
 SEC_OVERLAP = 160
@@ -138,8 +138,8 @@ def _chunk_ect(text: str) -> list[dict]:
     except Exception as exc:  # noqa: BLE001
         print(f"  [chunking] ECT Chonkie failed, using token windows: {exc}")
 
-    # fallback = _token_window_split(text, chunk_size=ECT_CHUNK_SIZE, overlap=ECT_OVERLAP)
-    # return [{"text": c, "chunk_kind": "semantic"} for c in fallback if c.strip()]
+    fallback = _token_window_split(text, chunk_size=ECT_CHUNK_SIZE, overlap=ECT_OVERLAP)
+    return [{"text": c, "chunk_kind": "semantic"} for c in fallback if c.strip()]
 
 
 def _chunk_sec(text: str) -> list[dict]:
@@ -241,6 +241,23 @@ def create_chunks(doc):
         period = doc.get("period", "unknown")
         base_id = f"{doc['ticker']}_ect_{period}"
 
+    # Build period metadata once per document.
+    doc_fiscal_year = _safe_str(doc.get("fiscal_year")) or None
+    doc_fiscal_quarter = normalize_fiscal_quarter(_safe_str(doc.get("fiscal_quarter")) or None)
+    doc_canonical_period = _safe_str(doc.get("canonical_period")) or None
+    doc_period_end_date = _safe_str(doc.get("period_end_date")) or None
+
+    # Derive from ECT period when explicit fiscal metadata is missing.
+    if doc.get("source_type") == "ect" and (doc_fiscal_year is None or doc_fiscal_quarter is None):
+        parsed_year, parsed_quarter = parse_year_quarter(_safe_str(doc.get("period")))
+        if doc_fiscal_year is None and parsed_year is not None:
+            doc_fiscal_year = str(parsed_year)
+        if doc_fiscal_quarter is None and parsed_quarter is not None:
+            doc_fiscal_quarter = parsed_quarter
+
+    if doc_canonical_period is None:
+        doc_canonical_period = canonical_period_key(doc_fiscal_year, doc_fiscal_quarter)
+
     # Create chunk dict for each text chunk
     for idx, entry in enumerate(chunk_entries):
         chunk_str = entry["text"]
@@ -251,6 +268,10 @@ def create_chunks(doc):
             "source_type": doc["source_type"],
             "section_type": _classify_section(chunk_str, _safe_str(doc.get("source_type"))),
             "chunk_kind": chunk_kind,
+            "period_end_date": doc_period_end_date,
+            "fiscal_year": doc_fiscal_year,
+            "fiscal_quarter": doc_fiscal_quarter,
+            "canonical_period": doc_canonical_period,
             "text": chunk_str
         }
 
@@ -308,6 +329,10 @@ def build_index():
                 "source_type": c["source_type"],
                 "section_type": c["section_type"],
                 "chunk_kind": c.get("chunk_kind", "prose"),
+                "period_end_date": c.get("period_end_date"),
+                "fiscal_year": c.get("fiscal_year"),
+                "fiscal_quarter": c.get("fiscal_quarter"),
+                "canonical_period": c.get("canonical_period"),
                 **({
                     "filing_type": c["filing_type"],
                     "filing_date": c["filing_date"]
