@@ -48,10 +48,12 @@ class AgentState(TypedDict):
     retrieved_chunks:     list[Any]    # list[RetrievedChunk]
     retrieval_attempts:   int
     sufficiency:          str          # "sufficient" | "insufficient"
+    diagnostics:          dict[str, Any]
     # Generation
     answer:               str
     # Faithfulness
     is_faithful:          bool | None
+    faithfulness_status:  str          # "passed" | "failed" | "unknown"
     node_errors:          dict[str, str]
     confidence:           str          # "high" | "low"
     faithfulness_reasoning: str | None
@@ -71,11 +73,14 @@ class AgenticResult:
     contexts:               list[str]     # plain text per chunk (for RAGAS)
     retrieval_attempts:     int
     is_faithful:            bool | None
+    faithfulness_status:    str
     confidence:             str
     faithfulness_reasoning: str | None
     question_type:          str
     model:                  str
     node_errors:            dict[str, str]
+    diagnostics:            dict[str, Any]
+    citations:              list[dict[str, Any]]
 
 
 ##############################################################################
@@ -85,9 +90,9 @@ class AgenticResult:
 class AgenticPipeline:
     """
     Agentic RAG pipeline with:
-      - Query decomposition (query_analyzer)
-      - Retrieval sufficiency checking with up to 2 retries (sufficiency_checker + query_refiner)
-      - Faithfulness gating on the generated answer (faithfulness_gate)
+        - Query decomposition (query_analyzer)
+        - Retrieval sufficiency checking with up to 3 retries (sufficiency_checker + query_refiner)
+        - Faithfulness gating on the generated answer (faithfulness_gate)
     """
 
     def __init__(
@@ -181,8 +186,10 @@ class AgenticPipeline:
             "retrieved_chunks":      [],
             "retrieval_attempts":    0,
             "sufficiency":           "sufficient",
+            "diagnostics":           {},
             "answer":                "",
-            "is_faithful":           True,
+            "is_faithful":           None,
+            "faithfulness_status":   "unknown",
             "node_errors":           {},
             "confidence":            "high",
             "faithfulness_reasoning": None,
@@ -191,26 +198,49 @@ class AgenticPipeline:
         final_state = self._graph.invoke(initial_state)
 
         chunks = final_state["retrieved_chunks"]
+        answer = final_state["answer"]
+        faithfulness_status = final_state.get("faithfulness_status", "unknown")
+        diagnostics = final_state.get("diagnostics", {})
+        confidence = final_state["confidence"]
+
+        sufficiency_checks = diagnostics.get("sufficiency_checks", []) if isinstance(diagnostics, dict) else []
+        repeated_insufficiency = (
+            len(sufficiency_checks) >= 2
+            and all(check.get("decision") == "insufficient" for check in sufficiency_checks)
+        )
+
+        # Conservative fallback: when all sufficiency checks remained insufficient,
+        # and faithfulness gate is weak, avoid returning a potentially fabricated answer.
+        if (
+            repeated_insufficiency
+            and faithfulness_status in {"failed", "unknown"}
+            and confidence == "low"
+        ):
+            answer = "The retrieved context does not contain sufficient information to answer this question."
+
         result = AgenticResult(
             question               = question,
-            answer                 = final_state["answer"],
+            answer                 = answer,
             sub_questions          = final_state["sub_questions"],
             retrieved_chunks       = chunks,
             contexts               = [c.text for c in chunks],
             retrieval_attempts     = final_state["retrieval_attempts"],
             is_faithful            = final_state["is_faithful"],
-            confidence             = final_state["confidence"],
+            faithfulness_status    = faithfulness_status,
+            confidence             = confidence,
             faithfulness_reasoning = final_state["faithfulness_reasoning"],
             question_type          = final_state["question_type"],
             model                  = self._model,
             node_errors            = final_state.get("node_errors", {}),
+            diagnostics            = diagnostics,
+            citations              = diagnostics.get("answer_citations", []) if isinstance(diagnostics, dict) else [],
         )
 
         print(f"{'─'*65}")
         print(f"  Type          : {result.question_type}")
         print(f"  Sub-questions : {result.sub_questions}")
         print(f"  Chunks        : {len(result.retrieved_chunks)} ({result.retrieval_attempts} retries)")
-        print(f"  Faithful      : {result.is_faithful} (confidence={result.confidence})")
+        print(f"  Faithful      : {result.is_faithful} status={result.faithfulness_status} (confidence={result.confidence})")
         if result.node_errors:
             print(f"  Node errors   : {', '.join(result.node_errors)}")
         print(f"  Answer        : {result.answer[:150]}...")
@@ -232,7 +262,7 @@ class AgenticPipeline:
 ##############################################################################
 
 if __name__ == "__main__":
-    pipeline = AgenticPipeline(model="qwen")
+    pipeline = AgenticPipeline()
 
     test_questions = [
         # L1 — direct extraction
