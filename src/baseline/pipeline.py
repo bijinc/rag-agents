@@ -3,19 +3,14 @@ from dataclasses import dataclass
 from openai import OpenAI
 from dotenv import load_dotenv
 from src.retrieval import Retriever, RetrievedChunk, SearchFilters
-from src.constants import OPENROUTER_BASE_URL, MODELS, DEFAULT_MODEL
+from src.constants import OPENROUTER_BASE_URL, MODELS, DEFAULT_MODEL, DEFAULT_TOP_K
 
-##############################################################################
-#                              CONFIGURATION                                 #
-##############################################################################
 
 # load OpenRouter API key
 load_dotenv()
 
-DEFAULT_TOP_K = 5
 MAX_TOKENS    = 1024
 
-# System prompt — keeps the model grounded in retrieved context only
 SYSTEM_PROMPT = """
 You are a financial analyst assistant. Answer questions using ONLY the provided source passages.
 
@@ -209,3 +204,6 @@ def test_pipeline():
     for q in test_questions:
         result = pipeline.run(q, top_k=5)
         print_result(result)
+
+if __name__ == "__main__":
+    test_pipeline()
