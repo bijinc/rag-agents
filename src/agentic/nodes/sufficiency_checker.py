@@ -69,7 +69,7 @@ Do these passages contain enough information to answer the question?
 #                              HELPERS                                       #
 ##############################################################################
 
-def _format_context_preview(chunks: list[RetrievedChunk], max_chars: int = 6000) -> str:
+def _format_context_preview(chunks: list[RetrievedChunk], max_chars: int = 8000) -> str:
     """Abbreviated context for the sufficiency prompt — avoids huge token usage."""
     parts = []
     total = 0
@@ -77,7 +77,10 @@ def _format_context_preview(chunks: list[RetrievedChunk], max_chars: int = 6000)
         label = (f"{c.ticker} {c.filing_type} ({c.filing_date})"
                  if c.source_type == "sec_filing"
                  else f"{c.ticker} ECT ({c.period})")
-        preview = c.text[:600].replace("\n", " ").strip()
+        # Use longer preview for table chunks since financial numbers are often
+        # spread across wide fixed-width rows that get cut off at 600 chars.
+        preview_len = 1000 if c.chunk_kind == "table" else 600
+        preview = c.text[:preview_len].replace("\n", " ").strip()
         entry = f"[{i}] {label}: {preview}..."
         parts.append(entry)
         total += len(entry)
@@ -208,19 +211,33 @@ def _structured_evidence_score(question: str, chunks: list[RetrievedChunk]) -> t
     return score, matched_ids
 
 
-def _structured_fast_path(question: str, chunks: list[RetrievedChunk], coverage: dict) -> tuple[bool, str, list[str]]:
+def _structured_fast_path(question: str, chunks: list[RetrievedChunk], coverage: dict, retrieval_attempts: int = 0) -> tuple[bool, str, list[str]]:
     flags = _question_flags(question)
-    # Use fast-path only for direct lookup style questions.
-    if flags["asks_compare"] or flags["asks_management"]:
-        return False, "", []
-
-    # Time-constrained questions need stronger temporal coverage than generic lookup.
-    if flags["asks_time"] and (coverage["filing_date_count"] + coverage["period_count"]) < 2:
-        return False, "", []
 
     score, matched_ids = _structured_evidence_score(question, chunks)
-    if coverage["sec_chunk_count"] >= 1 and score >= 3:
-        return True, "Structured metric evidence detected in retrieved financial chunks.", matched_ids
+
+    # Direct lookup questions: low bar (score >= 3)
+    if not flags["asks_compare"] and not flags["asks_management"]:
+        if flags["asks_time"] and (coverage["filing_date_count"] + coverage["period_count"]) < 2:
+            return False, "", []
+        if coverage["sec_chunk_count"] >= 1 and score >= 3:
+            return True, "Structured metric evidence detected in retrieved financial chunks.", matched_ids
+
+    # Comparison/management questions: require more evidence (score >= 4),
+    # but still allow fast-path if we have substantial coverage.
+    if flags["asks_compare"] and score >= 4 and coverage["chunk_count"] >= 5:
+        return True, "Sufficient structured evidence for comparison question.", matched_ids
+
+    if flags["asks_management"] and coverage["ect_chunk_count"] >= 3 and coverage["chunk_count"] >= 5:
+        return True, "Sufficient ECT coverage for management commentary question.", matched_ids
+
+    # After 1+ retrieval attempts with reasonable context, let the generator
+    # try. The faithfulness gate will catch bad answers downstream.
+    # This prevents the retry loop from diluting good initial retrieval by
+    # progressively relaxing filters and losing relevant chunks.
+    if retrieval_attempts >= 1 and coverage["chunk_count"] >= 5:
+        return True, "Sufficient context after retrieval retry — deferring to generator.", matched_ids
+
     return False, "", matched_ids
 
 
@@ -255,7 +272,7 @@ def sufficiency_checker_node(state: dict, client: OpenAI, model: str) -> dict:
 
     coverage = _compute_coverage(chunks, sub_questions)
 
-    fast_path_ok, fast_path_reason, fast_path_chunks = _structured_fast_path(question, chunks, coverage)
+    fast_path_ok, fast_path_reason, fast_path_chunks = _structured_fast_path(question, chunks, coverage, retrieval_attempts)
     if fast_path_ok:
         print(f"  [sufficiency_checker] sufficient — {fast_path_reason}")
         sufficiency_checks.append({
