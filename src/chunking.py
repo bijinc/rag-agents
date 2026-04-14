@@ -121,7 +121,7 @@ def _normalize_semantic_chunks(chonkie_chunks, chunk_kind: str) -> list[dict]:
 def _get_semantic_embeddings():
     global _SEMANTIC_EMBEDDINGS
     if _SEMANTIC_EMBEDDINGS is None:
-        _SEMANTIC_EMBEDDINGS = SentenceTransformerEmbeddings("all-MiniLM-L6-v2", device="cpu")
+        _SEMANTIC_EMBEDDINGS = SentenceTransformerEmbeddings(EMBEDDING_MODEL, device="cpu")
     return _SEMANTIC_EMBEDDINGS
 
 

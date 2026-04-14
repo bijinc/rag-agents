@@ -1,5 +1,5 @@
 
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "BAAI/bge-base-en-v1.5"
 COLLECTION_NAME = "financial_docs"
 CHROMA_DB_PATH = "data/chroma_db"
 

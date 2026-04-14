@@ -447,9 +447,13 @@ class Retriever:
         all_chunks: list[RetrievedChunk] = []
         seen_ids: set[str] = set()
 
+        # Embed the query ourselves so we don't rely on ChromaDB's default
+        # embedding function (which may not match the model used at index time).
+        query_embedding = self._embed_model.encode(query).tolist()
+
         for term in search_terms[:3]:  # limit to avoid excessive queries
             try:
-                kwargs: dict = {"query_texts": [query], "n_results": min(k, 20)}
+                kwargs: dict = {"query_embeddings": [query_embedding], "n_results": min(k, 20)}
                 if chroma_filter:
                     kwargs["where"] = chroma_filter
                 kwargs["where_document"] = {"$contains": term}
