@@ -6,7 +6,7 @@ CHROMA_DB_PATH = "data/chroma_db"
 
 DEFAULT_TOP_K = 15
 DEFAULT_SEED = 42
-SEC_CHUNKER_BACKEND = "token"  # "token" | "chonkie"
+
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 GENERATOR_MODEL = "qwen/qwen-2.5-72b-instruct"
