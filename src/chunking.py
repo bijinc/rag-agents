@@ -142,6 +142,34 @@ def _chunk_ect(text: str) -> list[dict]:
     return [{"text": c, "chunk_kind": "semantic"} for c in fallback if c.strip()]
 
 
+def _extract_table_header(prose_text: str, max_chars: int = 200) -> str:
+    """Extract the last meaningful line(s) from a prose segment to use as
+    a context header for the table that follows it.  This gives table chunks
+    natural-language context so embeddings and BM25 can match queries like
+    'total net revenue' to a table containing '$391,035'."""
+    if not prose_text:
+        return ""
+    lines = [l.strip() for l in prose_text.strip().splitlines() if l.strip()]
+    if not lines:
+        return ""
+    # Walk backwards, skipping separator lines (dashes, underscores, box-drawing)
+    header_lines = []
+    chars = 0
+    for line in reversed(lines):
+        # Skip lines that are mostly non-alphanumeric (separators, box-drawing)
+        alpha_ratio = sum(1 for ch in line if ch.isalnum()) / max(1, len(line))
+        if alpha_ratio < 0.3:
+            continue
+        if chars + len(line) > max_chars:
+            break
+        header_lines.insert(0, line)
+        chars += len(line)
+        # One or two lines is usually enough context
+        if len(header_lines) >= 2:
+            break
+    return "\n".join(header_lines)
+
+
 def _chunk_sec(text: str) -> list[dict]:
     out: list[dict] = []
     prose_chunker = None
@@ -153,14 +181,25 @@ def _chunk_sec(text: str) -> list[dict]:
         prose_chunker_failed = True
         print(f"  [chunking] SEC prose Chonkie unavailable, using token windows: {exc}")
 
-    for segment in _sec_structured_segments(text):
+    segments = _sec_structured_segments(text)
+    last_prose_text = ""  # track preceding prose for table headers
+
+    for segment in segments:
         kind = segment["kind"]
         seg_text = segment["text"]
 
         if kind == "table":
-            table_chunks = _token_window_split(seg_text, chunk_size=min(SEC_CHUNK_SIZE, 512), overlap=0)
+            # Prepend context header from preceding prose so table chunks
+            # have natural language for embedding/BM25 matching.
+            header = _extract_table_header(last_prose_text)
+            prefix = f"[Table context: {header}]\n" if header else ""
+            prefixed_text = prefix + seg_text
+
+            table_chunks = _token_window_split(prefixed_text, chunk_size=min(SEC_CHUNK_SIZE, 512), overlap=0)
             out.extend({"text": t, "chunk_kind": "table"} for t in table_chunks if t.strip())
             continue
+
+        last_prose_text = seg_text  # remember for next table's header
 
         if prose_chunker is not None and not prose_chunker_failed:
             try:

@@ -4,7 +4,7 @@ COLLECTION_NAME = "financial_docs"
 CHROMA_DB_PATH = "data/chroma_db"
 
 
-DEFAULT_TOP_K = 10
+DEFAULT_TOP_K = 15
 DEFAULT_SEED = 42
 SEC_CHUNKER_BACKEND = "token"  # "token" | "chonkie"
 

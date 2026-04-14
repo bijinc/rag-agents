@@ -46,6 +46,32 @@ Follow these rules in order:
 MAX_TOKENS = 1024
 
 
+def _normalize_table_text(text: str) -> str:
+    """Collapse SEC financial table whitespace into a more LLM-readable format.
+
+    Raw SEC tables use fixed-width formatting like:
+        Total net sales           $         391,035           2      $         383,285
+    This normalizes to:
+        Total net sales  $391,035  2  $383,285
+
+    This helps smaller LLMs (Qwen-7B) extract numbers from table chunks.
+    """
+    import re as _re
+    # Remove [Table context: ...] prefix — useful for embeddings but noisy for LLM
+    text = _re.sub(r"^\[Table context:.*?\]\n?", "", text, flags=_re.DOTALL)
+    # Collapse runs of whitespace (but preserve newlines for row structure)
+    lines = text.splitlines()
+    cleaned = []
+    for line in lines:
+        # Collapse multiple spaces into double-space (preserves column feel)
+        line = _re.sub(r"  +", "  ", line)
+        # Close gap between $ and number: "$  391,035" → "$391,035"
+        line = _re.sub(r"\$\s+(\d)", r"$\1", line)
+        if line.strip():
+            cleaned.append(line.strip())
+    return "\n".join(cleaned)
+
+
 def _format_context(chunks: list[RetrievedChunk]) -> str:
     """Numbered context block — same format as baseline pipeline."""
     if not chunks:
@@ -56,7 +82,11 @@ def _format_context(chunks: list[RetrievedChunk]) -> str:
             label = f"{c.ticker} {c.filing_type} ({c.filing_date})"
         else:
             label = f"{c.ticker} Earnings Call ({c.period})"
-        parts.append(f"[{i}] {label}\n{c.text.strip()}")
+        text = c.text.strip()
+        # Clean up table chunks so the LLM can parse numbers
+        if c.chunk_kind == "table":
+            text = _normalize_table_text(text)
+        parts.append(f"[{i}] {label}\n{text}")
     return "\n\n".join(parts)
 
 
@@ -179,11 +209,15 @@ def _extract_metric_answer(question: str, chunks: list[RetrievedChunk]) -> tuple
     # Metric-specific patterns reduce accidental captures like section numbers.
     percent_re = re.compile(r"\d{1,3}(?:\.\d+)?\s?%")
     money_re = re.compile(
-        r"(?:\$\s?\d{1,3}(?:,\d{3})+(?:\.\d+)?(?:\s?(?:million|billion|bn|m))?)"
+        r"(?:\$\s*\d{1,3}(?:,\d{3})+(?:\.\d+)?(?:\s?(?:million|billion|bn|m))?)"
         r"|(?:\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\s?(?:million|billion|bn|m)\b)",
         re.IGNORECASE,
     )
     candidates: list[tuple[float, str, RetrievedChunk]] = []
+
+    # When the question asks for a full "fiscal year" figure, only extract
+    # from annual filings (10-K) so quarterly 10-Q numbers don't win.
+    annual_question = "fiscal year" in question.lower() and not question_quarter
 
     for c in chunks[:20]:
         text = c.text
@@ -191,6 +225,8 @@ def _extract_metric_answer(question: str, chunks: list[RetrievedChunk]) -> tuple
         if not any(t in lower for t in terms):
             continue
         if c.section_type not in {"financial_statements", "general"}:
+            continue
+        if annual_question and c.filing_type and c.filing_type != "10-K":
             continue
 
         year_matches = True
@@ -208,14 +244,21 @@ def _extract_metric_answer(question: str, chunks: list[RetrievedChunk]) -> tuple
             continue
 
         # Only keep values close to metric terms to avoid random table indices.
+        # For revenue/income labels, look forward only — in financial tables the
+        # dollar amount follows the label on the same row, so looking backward
+        # would capture numbers from the preceding row (e.g. R&D near "Percentage of total net sales").
+        forward_only_terms = {"total net sales", "net sales", "total revenue", "net income", "total net revenue"}
         for term in terms:
             start = 0
             while True:
                 pos = lower.find(term, start)
                 if pos == -1:
                     break
-                win_left = max(0, pos - 60)
-                win_right = min(len(text), pos + len(term) + 120)
+                if term in forward_only_terms:
+                    win_left = pos
+                else:
+                    win_left = max(0, pos - 60)
+                win_right = min(len(text), pos + len(term) + 200)
                 window = text[win_left:win_right]
                 for m in numeric_pattern.finditer(window):
                     val = m.group(0).strip()
@@ -223,6 +266,14 @@ def _extract_metric_answer(question: str, chunks: list[RetrievedChunk]) -> tuple
                         continue
 
                     score = float(c.score)
+                    # Strongly prefer matches where the term is a line-initial label
+                    # (e.g. "Total net sales  $391,035") vs embedded in another phrase
+                    # (e.g. "Percentage of total net sales  15")
+                    lines_before = text[:pos].split("\n")
+                    line_start = text.rfind("\n", 0, pos)
+                    prefix_on_line = text[line_start+1:pos].strip().lower() if line_start >= 0 else text[:pos].strip().lower()
+                    if prefix_on_line == "" or prefix_on_line.endswith(":") or prefix_on_line.startswith(term):
+                        score += 0.3  # term is the row label itself
                     if margin_like:
                         score += 0.2
                     if revenue_like:
@@ -234,6 +285,11 @@ def _extract_metric_answer(question: str, chunks: list[RetrievedChunk]) -> tuple
                     if question_quarter and c.fiscal_quarter and str(c.fiscal_quarter).upper() == question_quarter:
                         score += 0.05
                     if term in {"total net revenue", "total revenue", "gross margin percentage"}:
+                        score += 0.1
+                    # Prefer annual filings for "fiscal year" questions, quarterly for "Q1/Q2/.." questions
+                    if "fiscal year" in question.lower() and c.filing_type == "10-K":
+                        score += 0.15
+                    if question_quarter and c.filing_type == "10-Q":
                         score += 0.1
 
                     candidates.append((score, val, c))

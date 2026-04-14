@@ -1,0 +1,13 @@
+{
+  "run_id": "baseline-32a76490-df86-4cd2-8525-0a0554224c87",
+  "run_started_at": "2026-04-13T22:34:00.845927+00:00",
+  "generator_model": "qwen/qwen-2.5-7b-instruct",
+  "evaluator_model": "meta-llama/llama-3.1-8b-instruct",
+  "top_k": 10,
+  "benchmark_path": "data/qa_benchmark.json",
+  "seed": 42,
+  "skip_ragas": true,
+  "skip_judge": false,
+  "judge_only": false,
+  "max_questions": null
+}
