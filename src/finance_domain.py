@@ -10,23 +10,17 @@ from __future__ import annotations
 import re
 from typing import Iterable
 
-VALID_TICKERS = {"AAPL", "AMD", "COST", "JPM", "F", "ELV"}
+VALID_TICKERS = {"AAPL", "JPM", "F"}
 
 # Keep aliases lowercase and punctuation-light for robust lookup.
 _TICKER_ALIASES = {
     "apple": "AAPL",
     "apple inc": "AAPL",
-    "advanced micro devices": "AMD",
-    "amd": "AMD",
-    "costco": "COST",
-    "costco wholesale": "COST",
     "jpmorgan": "JPM",
     "jpmorgan chase": "JPM",
     "jp morgan": "JPM",
     "ford": "F",
     "ford motor": "F",
-    "elevance": "ELV",
-    "elevance health": "ELV",
 }
 
 VALID_SOURCE_TYPES = {"sec_filing", "ect"}

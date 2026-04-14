@@ -13,14 +13,6 @@ COMPANIES = {
         "display_name": "Apple Inc.",
         "ect_dataset_name": "Apple"  # Name as it appears in Kaggle dataset
     },
-    "AMD": {
-        "display_name": "Advanced Micro Devices",
-        "ect_dataset_name": "AMD"
-    },
-    "COST": {
-        "display_name": "Costco Wholesale Corporation",
-        "ect_dataset_name": "Costco"
-    },
     "JPM": {
         "display_name": "JPMorgan Chase & Co.",
         "ect_dataset_name": "JPM"
@@ -28,10 +20,6 @@ COMPANIES = {
     "F": {
         "display_name": "Ford Motor Company",
         "ect_dataset_name": "Ford"
-    },
-    "ELV": {
-        "display_name": "Elevance Health, Inc.",
-        "ect_dataset_name": "Elevance Health"
     }
 }
 
@@ -334,3 +322,6 @@ def fetch_data():
     # Save one final manifest with both SEC and ECT counts.
     save_manifest(sec_stats, ect_counts)
     print("Fetching complete")
+
+if __name__ == "__main__":
+    fetch_data()

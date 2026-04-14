@@ -374,7 +374,7 @@ class Retriever:
         return filtered[:k]
 
 
-    def bm25_search(self,query: str,k: int = DEFAULT_TOP_K,filters: SearchFilters | None = None,) -> list[RetrievedChunk]:
+    def bm25_search(self, query: str, k: int = DEFAULT_TOP_K, filters: SearchFilters | None = None) -> list[RetrievedChunk]:
         """
         Top-k retrieval by BM25Okapi keyword scoring.
         The corpus is filtered in-memory before scoring so that BM25 sees the same slice of documents as the dense search.

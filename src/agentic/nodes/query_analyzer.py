@@ -38,14 +38,11 @@ Given one user question, return exactly one JSON object with fields:
 - question_type
 
 Domain:
-- Valid tickers: ["AAPL","AMD","COST","JPM","F","ELV"]
+- Valid tickers: ["AAPL", "JPM", "F"]
 - Company aliases:
     - Apple -> AAPL
-    - AMD or Advanced Micro Devices -> AMD
-    - Costco -> COST
     - JPMorgan or JPMorgan Chase -> JPM
     - Ford -> F
-    - Elevance or Elevance Health -> ELV
 - Filing types: "10-K", "10-Q", "8-K"
 - Source types: "sec_filing", "ect"
 
