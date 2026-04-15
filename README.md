@@ -66,7 +66,7 @@ cp .env.example .env
 3. Build index and run both evaluations
 
 ```bash
-python main.py
+python main.py --latest --reindex
 ```
 
 ## Evaluation Commands
