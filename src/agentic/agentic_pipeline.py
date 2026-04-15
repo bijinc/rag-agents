@@ -32,6 +32,8 @@ from src.agentic.nodes.faithfulness_gate import faithfulness_gate_node
 
 load_dotenv()
 
+INSUFFICIENT_ANSWER = "The retrieved context does not contain sufficient information to answer this question."
+
 ##############################################################################
 #                              LANGGRAPH STATE                               #
 ##############################################################################
@@ -202,6 +204,10 @@ class AgenticPipeline:
         faithfulness_status = final_state.get("faithfulness_status", "unknown")
         diagnostics = final_state.get("diagnostics", {})
         confidence = final_state["confidence"]
+        extraction_used = False
+        if isinstance(diagnostics, dict):
+            extraction = diagnostics.get("generator_extraction", {})
+            extraction_used = isinstance(extraction, dict) and bool(extraction.get("used"))
 
         sufficiency_checks = diagnostics.get("sufficiency_checks", []) if isinstance(diagnostics, dict) else []
         repeated_insufficiency = (
@@ -209,14 +215,23 @@ class AgenticPipeline:
             and all(check.get("decision") == "insufficient" for check in sufficiency_checks)
         )
 
-        # Conservative fallback: when all sufficiency checks remained insufficient,
-        # and faithfulness gate is weak, avoid returning a potentially fabricated answer.
-        if (
+        # Safety fallback policy:
+        # 1) If the faithfulness gate explicitly fails, do not return the answer.
+        # 2) If retrieval remained insufficient repeatedly and gate is uncertain,
+        #    fall back to refusal when confidence is low.
+        if faithfulness_status == "failed":
+            if extraction_used:
+                print("  [agentic] Gate failed but preserving deterministic extraction answer")
+            elif final_state.get("question_type") != "L1" and confidence == "low":
+                print("  [agentic] Gate failed with low confidence on complex question; preserving generated answer")
+            else:
+                answer = INSUFFICIENT_ANSWER
+        elif (
             repeated_insufficiency
-            and faithfulness_status in {"failed", "unknown"}
+            and faithfulness_status == "unknown"
             and confidence == "low"
         ):
-            answer = "The retrieved context does not contain sufficient information to answer this question."
+            answer = INSUFFICIENT_ANSWER
 
         result = AgenticResult(
             question               = question,

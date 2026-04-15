@@ -211,31 +211,36 @@ def _structured_evidence_score(question: str, chunks: list[RetrievedChunk]) -> t
     return score, matched_ids
 
 
-def _structured_fast_path(question: str, chunks: list[RetrievedChunk], coverage: dict, retrieval_attempts: int = 0) -> tuple[bool, str, list[str]]:
+def _structured_fast_path(
+    question: str,
+    chunks: list[RetrievedChunk],
+    coverage: dict,
+    retrieval_attempts: int = 0,
+    question_type: str = "L1",
+) -> tuple[bool, str, list[str]]:
     flags = _question_flags(question)
 
     score, matched_ids = _structured_evidence_score(question, chunks)
 
-    # Direct lookup questions: low bar (score >= 3)
-    if not flags["asks_compare"] and not flags["asks_management"]:
-        if flags["asks_time"] and (coverage["filing_date_count"] + coverage["period_count"]) < 2:
+    # Keep fast-path conservative: single-pass L1 direct lookups only.
+    if retrieval_attempts > 0:
+        return False, "", []
+    if question_type != "L1":
+        return False, "", []
+    if flags["asks_compare"] or flags["asks_management"]:
+        return False, "", []
+
+    # Avoid fast-path when retrieval mixes multiple periods/sources for temporal lookups.
+    temporal_span = coverage["filing_date_count"] + coverage["period_count"]
+    if flags["asks_time"]:
+        if temporal_span < 1:
             return False, "", []
-        if coverage["sec_chunk_count"] >= 1 and score >= 3:
-            return True, "Structured metric evidence detected in retrieved financial chunks.", matched_ids
+        if temporal_span > 1:
+            return False, "", []
 
-    # Comparison/management questions: require more evidence (score >= 4),
-    # but still allow fast-path if we have substantial coverage.
-    if flags["asks_compare"] and score >= 4 and coverage["chunk_count"] >= 5:
-        return True, "Sufficient structured evidence for comparison question.", matched_ids
-
-    if flags["asks_management"] and coverage["ect_chunk_count"] >= 3 and coverage["chunk_count"] >= 5:
-        return True, "Sufficient ECT coverage for management commentary question.", matched_ids
-
-    # After 1+ retrieval attempts with reasonable context, let the generator try. 
-    # The faithfulness gate will catch bad answers downstream. This prevents the retry loop from diluting 
-    # good initial retrieval by progressively relaxing filters and losing relevant chunks.
-    if retrieval_attempts >= 1 and coverage["chunk_count"] >= 5:
-        return True, "Sufficient context after retrieval retry — deferring to generator.", matched_ids
+    # Structured evidence must be strong enough to avoid row-level extraction mistakes.
+    if coverage["sec_chunk_count"] >= 1 and score >= 4 and len(matched_ids) >= 2:
+        return True, "High-confidence structured evidence detected for direct lookup question.", matched_ids
 
     return False, "", matched_ids
 
@@ -252,6 +257,7 @@ def sufficiency_checker_node(state: dict, client: OpenAI, model: str) -> dict:
     """
     question = state["question"]
     chunks   = state.get("retrieved_chunks", [])
+    question_type = state.get("question_type", "L1")
     sub_questions = state.get("sub_questions", [question])
     retrieval_attempts = state.get("retrieval_attempts", 0)
 
@@ -271,7 +277,13 @@ def sufficiency_checker_node(state: dict, client: OpenAI, model: str) -> dict:
 
     coverage = _compute_coverage(chunks, sub_questions)
 
-    fast_path_ok, fast_path_reason, fast_path_chunks = _structured_fast_path(question, chunks, coverage, retrieval_attempts)
+    fast_path_ok, fast_path_reason, fast_path_chunks = _structured_fast_path(
+        question,
+        chunks,
+        coverage,
+        retrieval_attempts,
+        question_type,
+    )
     if fast_path_ok:
         print(f"  [sufficiency_checker] sufficient — {fast_path_reason}")
         sufficiency_checks.append({
@@ -370,8 +382,18 @@ def route_sufficiency(state: dict) -> str:
     if sufficiency == "insufficient" and retrieval_attempts >= 1 and retrieval_history:
         latest = retrieval_history[-1]
         overlap = latest.get("overlap_with_prev")
-        if overlap is not None and overlap >= 0.90:
-            print(f"  [sufficiency_checker] Early stop retries due to high overlap ({overlap:.2f})")
+        prev_chunk_count = None
+        if len(retrieval_history) >= 2:
+            prev_chunk_count = retrieval_history[-2].get("chunk_count")
+        coverage_delta = None
+        if prev_chunk_count is not None:
+            coverage_delta = latest.get("chunk_count", 0) - prev_chunk_count
+
+        if overlap is not None and overlap >= 0.90 and coverage_delta is not None and coverage_delta <= 1:
+            print(
+                "  [sufficiency_checker] Early stop retries due to high overlap "
+                f"({overlap:.2f}) with minimal coverage gain ({coverage_delta:+d})"
+            )
             return "sufficient"
 
     if sufficiency == "insufficient" and retrieval_attempts < 3:

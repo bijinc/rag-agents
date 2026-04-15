@@ -51,19 +51,37 @@ Is this answer faithful to the passages?
 """
 
 
-def _format_context_preview(chunks: list[RetrievedChunk], max_chars: int = 4000) -> str:
+def _format_context_preview(
+    chunks: list[RetrievedChunk],
+    max_chars: int = 6000,
+    preferred_chunk_id: str | None = None,
+) -> str:
     """Context preview for the faithfulness prompt."""
+    ordered_chunks = list(chunks)
+    if preferred_chunk_id:
+        preferred_idx = next((i for i, c in enumerate(ordered_chunks) if c.chunk_id == preferred_chunk_id), None)
+        if preferred_idx is not None:
+            preferred = ordered_chunks.pop(preferred_idx)
+            ordered_chunks.insert(0, preferred)
+
     parts = []
     total = 0
-    for i, c in enumerate(chunks, 1):
+    for i, c in enumerate(ordered_chunks, 1):
         label = (f"{c.ticker} {c.filing_type} ({c.filing_date})"
                  if c.source_type == "sec_filing"
                  else f"{c.ticker} ECT ({c.period})")
-        text_preview = c.text[:400].strip()
+        preview_len = 1000 if c.chunk_kind == "table" else 500
+        text_preview = c.text[:preview_len].strip()
         entry = f"[{i}] {label}:\n{text_preview}"
+
+        if total + len(entry) > max_chars and parts:
+            parts.append("[... context truncated for faithfulness check ...]")
+            break
+
         parts.append(entry)
         total += len(entry)
         if total >= max_chars:
+            parts.append("[... context truncated for faithfulness check ...]")
             break
     return "\n\n".join(parts)
 
@@ -77,8 +95,16 @@ def faithfulness_gate_node(state: dict, client: OpenAI, model: str = EVALUATOR_M
     question = state["question"]
     answer   = state.get("answer", "")
     chunks   = state.get("retrieved_chunks", [])
+    diagnostics = state.get("diagnostics", {})
+    preferred_chunk_id = None
+    if isinstance(diagnostics, dict):
+        extraction = diagnostics.get("generator_extraction", {})
+        if isinstance(extraction, dict) and extraction.get("used"):
+            evidence = extraction.get("evidence", {})
+            if isinstance(evidence, dict):
+                preferred_chunk_id = evidence.get("chunk_id")
 
-    context_preview = _format_context_preview(chunks)
+    context_preview = _format_context_preview(chunks, preferred_chunk_id=preferred_chunk_id)
 
     try:
         verdict = llm_json_call(

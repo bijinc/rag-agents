@@ -8,7 +8,7 @@ On retry, increases top_k and relaxes filing_type filter.
 from dataclasses import replace
 import re
 
-from src.retrieval import Retriever, RetrievedChunk, SearchFilters
+from src.retrieval import Retriever, RetrievedChunk
 from src.constants import DEFAULT_TOP_K
 
 

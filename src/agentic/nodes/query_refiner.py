@@ -15,21 +15,35 @@ from dataclasses import replace
 #                              PROMPTS                                       #
 ##############################################################################
 
-_SYSTEM = """You are refining financial search queries that failed to retrieve sufficient information.
+_SYSTEM = """
+You are a financial search query refiner.
 
-Produce broader, more general reformulations of the given sub-questions. Use alternative terminology, remove overly specific time constraints, and consider synonyms.
+Your job is to rewrite sub-questions that did not retrieve enough relevant passages so the next retrieval pass is broader and more recall-friendly.
 
-Output a JSON object:
-- sub_questions: list of 1-3 broader sub-questions
+Refinement rules:
+- Keep the original intent, but make each sub-question more general and easier to match in documents.
+- Remove or relax overly specific constraints when they are likely blocking retrieval, especially exact dates, quarters, narrow numeric thresholds, and overly specific wording.
+- Replace jargon with common financial synonyms when helpful.
+- Prefer concise, retrieval-friendly phrasing over full natural-language sentences.
+- Do not repeat nearly identical variants.
+- Do not introduce new facts, assumptions, or answers.
+- Return only 1 to 3 distinct sub-questions.
 
-Output ONLY valid JSON. No markdown fences, no prose."""
+Output format:
+- A single JSON object with exactly one key: "sub_questions"
+- "sub_questions" must be a list of 1 to 3 strings
 
-_USER = """ORIGINAL QUESTION: {question}
+Output ONLY valid JSON. No markdown fences. No prose.
+"""
+
+_USER = """
+ORIGINAL QUESTION: {question}
 
 PREVIOUS SUB-QUESTIONS (insufficient results):
 {sub_questions}
 
-Reformulate these as broader sub-questions that are more likely to match relevant passages."""
+Rewrite the sub-questions above so they are broader, less specific, and more likely to retrieve relevant passages.
+"""
 
 
 ##############################################################################
@@ -95,8 +109,8 @@ def query_refiner_node(state: dict, client: OpenAI, model: str) -> dict:
         }
 
     # Progressive relaxation by retry stage to avoid over-broad jumps.
-    # Stage 1: drop filing_type, keep source_type and tickers.
-    # Stage 2: drop filing_type and source_type, keep tickers.
+    # Stage 1: drop filing_type, keep source_type/tickers.
+    # Stage 2: drop section_types; keep source_type when ticker is pinned.
     # Stage 3+: fully unfiltered.
     next_attempt = retrieval_attempts + 1
     relaxed_filters = None
@@ -104,7 +118,10 @@ def query_refiner_node(state: dict, client: OpenAI, model: str) -> dict:
         if next_attempt == 1:
             relaxed_filters = replace(current_filters, filing_type=None)
         elif next_attempt == 2:
-            relaxed_filters = replace(current_filters, filing_type=None, source_type=None)
+            if current_filters.tickers:
+                relaxed_filters = replace(current_filters, filing_type=None, section_types=None)
+            else:
+                relaxed_filters = replace(current_filters, filing_type=None, section_types=None, source_type=None)
         else:
             relaxed_filters = None
 
