@@ -85,14 +85,8 @@ python -m src.agentic.agentic_evaluation --max-questions 5 --seed 42
 
 Useful flags:
 
-- `--skip-ragas`
-- `--skip-judge`
+- `--latest`
+- `--reindex`
 - `--judge-only`
 - `--max-questions`
 - `--seed`
-
-## Output Artifacts
-
-- Baseline results: `data/baseline_eval_results.json`
-- Agentic results: `data/agentic_eval_results.json`
-- Baseline metadata: `data/baseline_eval_results.json.meta`
