@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from pydantic import field_validator
 from typing import Literal
 
-from src.finance_domain import (
+from src.finance import (
     normalize_filing_type,
     normalize_fiscal_quarter,
     normalize_section_types,

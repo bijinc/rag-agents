@@ -7,6 +7,7 @@ CHROMA_DB_PATH = "data/chroma_db"
 
 DEFAULT_TOP_K = 15
 DEFAULT_SEED = 42
+BENCHMARK_PATH = "qa_benchmark.json"
 
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"

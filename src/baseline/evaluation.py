@@ -9,7 +9,7 @@ from uuid import uuid4
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from src.constants import OPENROUTER_BASE_URL, GENERATOR_MODEL, EVALUATOR_MODEL, DEFAULT_TOP_K, DEFAULT_SEED
+from src.constants import OPENROUTER_BASE_URL, GENERATOR_MODEL, EVALUATOR_MODEL, DEFAULT_TOP_K, DEFAULT_SEED, BENCHMARK_PATH
 from src.baseline.pipeline import RAGPipeline, PipelineResult
 from src.eval_utils import (
     llm_call_with_retry,
@@ -27,7 +27,6 @@ from src.eval_utils import (
 
 load_dotenv()
 
-BENCHMARK_PATH = "data/qa_benchmark.json"
 RESULTS_PATH   = "data/baseline_eval_results.json"
 NONE_SCORE_WARN_THRESHOLD = 0.10
 
@@ -273,12 +272,6 @@ def save_results(records: list[EvalRecord], path: str = RESULTS_PATH) -> None:
     print(f"\nResults saved → {path}")
 
 
-def save_run_metadata(path: str, metadata: dict) -> None:
-    meta_path = str(Path(path).with_suffix(Path(path).suffix + ".meta"))
-    save_json(meta_path, metadata)
-    print(f"Run metadata saved → {meta_path}")
-
-
 def print_summary(records: list[EvalRecord]) -> None:
     print(f"\n{'='*65}")
     print(f"EVALUATION SUMMARY  ({len(records)} questions)")
@@ -374,7 +367,6 @@ def evaluate_pipeline(
         run_llm_judge(records)
 
     save_results(records, results_path)
-    save_run_metadata(results_path, run_metadata)
     print_summary(records)
     return records
 

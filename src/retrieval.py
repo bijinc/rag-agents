@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from rank_bm25 import BM25Okapi
 from dataclasses import dataclass
 from src.constants import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DB_PATH, DEFAULT_TOP_K
-from src.finance_domain import canonical_period_key, parse_year_quarter
+from src.finance import canonical_period_key, parse_year_quarter
 
 RRF_K = 60       # constant from the original RRF paper (Cormack et al. 2009)
 TOKEN_PATTERN = re.compile(r"[A-Za-z]+(?:'[A-Za-z]+)?|\d+(?:\.\d+)?")

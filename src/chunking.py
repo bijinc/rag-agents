@@ -8,7 +8,7 @@ from chonkie import SemanticChunker
 from chonkie.embeddings import SentenceTransformerEmbeddings
 
 from src.constants import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DB_PATH
-from src.finance_domain import normalize_ticker, normalize_fiscal_quarter, canonical_period_key, parse_year_quarter
+from src.finance import normalize_ticker, normalize_fiscal_quarter, canonical_period_key, parse_year_quarter
 
 SEC_CHUNK_SIZE = 864
 SEC_OVERLAP = 160

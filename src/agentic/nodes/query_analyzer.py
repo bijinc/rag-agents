@@ -10,7 +10,7 @@ from openai import OpenAI
 from src.retrieval import SearchFilters
 from src.agentic.nodes.llm_utils import llm_json_call, append_node_error_diagnostics
 from src.agentic.nodes.node_schemas import QueryAnalyzerResponse
-from src.finance_domain import (
+from src.finance import (
     canonical_period_key,
     normalize_filing_type,
     normalize_fiscal_quarter,
