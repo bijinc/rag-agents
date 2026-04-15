@@ -1,12 +1,5 @@
-"""Shared finance-domain normalization utilities.
-
-These helpers centralize ticker alias resolution, fiscal period normalization,
-and section label normalization so ingestion, query analysis, and retrieval use
-consistent contracts.
-"""
 
 from __future__ import annotations
-
 import re
 from typing import Iterable
 
