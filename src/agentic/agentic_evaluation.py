@@ -1,7 +1,5 @@
 """
-Runs the AgenticPipeline on the same QA benchmark used by evaluation.py,
-then applies the same RAGAS faithfulness and LLM-as-judge metrics so results
-are directly comparable.
+Runs the AgenticPipeline, then applies RAGAS faithfulness and LLM-as-judge metrics.
 
 Usage:
     python -m src.agentic_evaluation
@@ -22,7 +20,7 @@ from dotenv import load_dotenv
 from src.constants import GENERATOR_MODEL, EVALUATOR_MODEL
 from src.agentic.agentic_pipeline import DEFAULT_MODEL, AgenticPipeline, AgenticResult
 from src.baseline.evaluation import run_ragas, run_llm_judge, EvalRecord
-from src.eval_utils import (
+from src.utils.eval_utils import (
     load_json,
     save_json,
     utc_now_iso,

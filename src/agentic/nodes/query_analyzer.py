@@ -10,7 +10,7 @@ from openai import OpenAI
 from src.retrieval import SearchFilters
 from src.agentic.nodes.llm_utils import llm_json_call, append_node_error_diagnostics
 from src.agentic.nodes.node_schemas import QueryAnalyzerResponse
-from src.finance_domain import (
+from src.utils.finance import (
     canonical_period_key,
     normalize_filing_type,
     normalize_fiscal_quarter,
@@ -97,9 +97,6 @@ Output: {"sub_questions":["Apple gross margin Q3 2024","Apple gross margin Q4 20
 
 Input: What did management say about AI investment?
 Output: {"sub_questions":["Management commentary on AI investment priorities","Management commentary on expected AI investment impact"],"tickers":[],"source_type":"ect","filing_type":null,"section_types":["prepared_remarks","q_and_a"],"fiscal_year":null,"fiscal_quarter":null,"period_end_date_from":null,"period_end_date_to":null,"question_type":"L3"}
-
-Input: Compare Apple and AMD R&D spending in FY2024 with what management said.
-Output: {"sub_questions":["Apple R&D spending in FY2024","AMD R&D spending in FY2024","Management commentary on R&D strategy for Apple and AMD"],"tickers":["AAPL","AMD"],"source_type":null,"filing_type":"10-K","section_types":["md&a","prepared_remarks"],"fiscal_year":2024,"fiscal_quarter":null,"period_end_date_from":null,"period_end_date_to":null,"question_type":"L4"}
 
 Final instruction:
 Return one JSON object only.

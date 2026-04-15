@@ -11,7 +11,7 @@ from openai import OpenAI
 
 from src.constants import OPENROUTER_BASE_URL, GENERATOR_MODEL, EVALUATOR_MODEL, DEFAULT_TOP_K, DEFAULT_SEED
 from src.baseline.pipeline import RAGPipeline, PipelineResult
-from src.eval_utils import (
+from src.utils.eval_utils import (
     llm_call_with_retry,
     load_json,
     parse_llm_json,

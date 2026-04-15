@@ -231,10 +231,9 @@ def _structured_fast_path(question: str, chunks: list[RetrievedChunk], coverage:
     if flags["asks_management"] and coverage["ect_chunk_count"] >= 3 and coverage["chunk_count"] >= 5:
         return True, "Sufficient ECT coverage for management commentary question.", matched_ids
 
-    # After 1+ retrieval attempts with reasonable context, let the generator
-    # try. The faithfulness gate will catch bad answers downstream.
-    # This prevents the retry loop from diluting good initial retrieval by
-    # progressively relaxing filters and losing relevant chunks.
+    # After 1+ retrieval attempts with reasonable context, let the generator try. 
+    # The faithfulness gate will catch bad answers downstream. This prevents the retry loop from diluting 
+    # good initial retrieval by progressively relaxing filters and losing relevant chunks.
     if retrieval_attempts >= 1 and coverage["chunk_count"] >= 5:
         return True, "Sufficient context after retrieval retry — deferring to generator.", matched_ids
 
