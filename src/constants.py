@@ -17,3 +17,6 @@ MODELS = {
     "qwen":  GENERATOR_MODEL,
     "llama": EVALUATOR_MODEL,
 }
+
+
+BENCHMARK_PATH = "data/benchmark_data.json"

@@ -9,7 +9,7 @@ from uuid import uuid4
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from src.constants import OPENROUTER_BASE_URL, GENERATOR_MODEL, EVALUATOR_MODEL, DEFAULT_TOP_K, DEFAULT_SEED
+from src.constants import OPENROUTER_BASE_URL, GENERATOR_MODEL, EVALUATOR_MODEL, DEFAULT_TOP_K, DEFAULT_SEED, BENCHMARK_PATH
 from src.baseline.pipeline import RAGPipeline, PipelineResult
 from src.utils.eval_utils import (
     llm_call_with_retry,
@@ -27,7 +27,6 @@ from src.utils.eval_utils import (
 
 load_dotenv()
 
-BENCHMARK_PATH = "data/qa_benchmark.json"
 RESULTS_PATH   = "data/baseline_eval_results.json"
 NONE_SCORE_WARN_THRESHOLD = 0.10
 

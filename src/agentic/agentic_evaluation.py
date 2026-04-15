@@ -17,7 +17,7 @@ from pathlib import Path
 from uuid import uuid4
 from dotenv import load_dotenv
 
-from src.constants import GENERATOR_MODEL, EVALUATOR_MODEL
+from src.constants import GENERATOR_MODEL, EVALUATOR_MODEL, BENCHMARK_PATH, DEFAULT_SEED
 from src.agentic.agentic_pipeline import DEFAULT_MODEL, AgenticPipeline, AgenticResult
 from src.baseline.evaluation import run_ragas, run_llm_judge, EvalRecord
 from src.utils.eval_utils import (
@@ -28,15 +28,9 @@ from src.utils.eval_utils import (
     validate_eval_flags,
 )
 
-##############################################################################
-#                              CONFIGURATION                                 #
-##############################################################################
-
 load_dotenv()
 
-BENCHMARK_PATH = "data/qa_benchmark.json"
 RESULTS_PATH   = "data/agentic_eval_results.json"
-DEFAULT_SEED   = 42
 
 ##############################################################################
 #                           DATA STRUCTURES                                  #
