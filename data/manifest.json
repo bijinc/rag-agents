@@ -1,24 +1,8 @@
 {
-  "last_updated": "2026-03-31T21:00:20.740356",
+  "last_updated": "2026-04-14T16:31:40.009141",
   "sec_filings": {
     "AAPL": {
       "company_name": "Apple Inc.",
-      "filings": {
-        "10-K": 2,
-        "10-Q": 8,
-        "8-K": 5
-      }
-    },
-    "AMD": {
-      "company_name": "Advanced Micro Devices",
-      "filings": {
-        "10-K": 2,
-        "10-Q": 8,
-        "8-K": 5
-      }
-    },
-    "COST": {
-      "company_name": "Costco Wholesale Corporation",
       "filings": {
         "10-K": 2,
         "10-Q": 8,
@@ -40,27 +24,16 @@
         "10-Q": 8,
         "8-K": 5
       }
-    },
-    "ELV": {
-      "company_name": "Elevance Health, Inc.",
-      "filings": {
-        "10-K": 2,
-        "10-Q": 8,
-        "8-K": 5
-      }
     }
   },
   "ect_data": {
     "AAPL": 27,
-    "AMD": 27,
-    "COST": 27,
     "JPM": 28,
-    "F": 27,
-    "ELV": 27
+    "F": 27
   },
   "totals": {
-    "sec_filings": 90,
-    "ect_transcripts": 163,
-    "total_documents": 253
+    "sec_filings": 45,
+    "ect_transcripts": 82,
+    "total_documents": 127
   }
 }

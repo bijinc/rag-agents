@@ -2,36 +2,25 @@ import os
 from dataclasses import dataclass
 from openai import OpenAI
 from dotenv import load_dotenv
+from src.retrieval import Retriever, RetrievedChunk, SearchFilters
+from src.constants import OPENROUTER_BASE_URL, MODELS, DEFAULT_MODEL, DEFAULT_TOP_K
 
+
+# load OpenRouter API key
 load_dotenv()
 
-from src.retrieval import Retriever, RetrievedChunk, SearchFilters
-
-##############################################################################
-#                              CONFIGURATION                                 #
-##############################################################################
-
-OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-
-# Models available via OpenRouter — swap by changing DEFAULT_MODEL
-MODELS = {
-    "qwen":  "qwen/qwen-2.5-7b-instruct",
-    "llama": "meta-llama/llama-3-8b-instruct",
-}
-DEFAULT_MODEL = "qwen"
-
-DEFAULT_TOP_K = 5
 MAX_TOKENS    = 1024
 
-# System prompt — keeps the model grounded in retrieved context only
-SYSTEM_PROMPT = """You are a financial analyst assistant. Answer questions using ONLY the provided source passages.
+SYSTEM_PROMPT = """
+You are a financial analyst assistant. Answer questions using ONLY the provided source passages.
 
 Rules:
 - If the answer is in the passages, state it clearly and cite which source it comes from (e.g. "According to AAPL 10-K 2024-11-01...").
 - If the passages do not contain enough information to answer, say exactly: "The retrieved context does not contain sufficient information to answer this question."
 - Do not use any knowledge outside the provided passages.
 - Do not fabricate figures, dates, or management statements.
-- For numerical answers, quote the exact figure from the source."""
+- For numerical answers, quote the exact figure from the source.
+"""
 
 ##############################################################################
 #                              DATA STRUCTURES                               #
@@ -52,6 +41,42 @@ class PipelineResult:
     def context_str(self) -> str:
         """Formatted context block exactly as passed to the model."""
         return _format_context(self.retrieved_chunks)
+    
+
+def _format_context(chunks: list[RetrievedChunk]) -> str:
+    """
+    Render retrieved chunks as a numbered context block for the prompt.
+    Each chunk includes its source label so the model can cite it.
+    """
+    if not chunks:
+        return "(no context retrieved)"
+
+    parts = []
+    for i, c in enumerate(chunks, 1):
+        if c.source_type == "sec_filing":
+            label = f"{c.ticker} {c.filing_type} ({c.filing_date})"
+        else:
+            label = f"{c.ticker} Earnings Call ({c.period})"
+        parts.append(f"[{i}] {label}\n{c.text.strip()}")
+
+    return "\n\n".join(parts)
+
+
+def print_result(result: PipelineResult) -> None:
+    """Pretty-print a PipelineResult for interactive use."""
+    print(f"\n{'='*70}")
+    print(f"Q: {result.question}")
+    print(f"{'─'*70}")
+    print(f"Model : {result.model}  |  top_k={result.top_k}")
+    print(f"Retrieved {len(result.retrieved_chunks)} chunks:")
+    for i, c in enumerate(result.retrieved_chunks, 1):
+        src = (f"{c.ticker} {c.filing_type} {c.filing_date}"
+               if c.source_type == "sec_filing"
+               else f"{c.ticker} ECT {c.period}")
+        print(f"  [{i}] score={c.score:.4f}  {src}")
+    print(f"{'─'*70}")
+    print(f"A: {result.answer}")
+    print(f"{'='*70}\n")
 
 
 ##############################################################################
@@ -161,53 +186,9 @@ class RAGPipeline:
         return results
 
 
-##############################################################################
-#                              HELPERS                                       #
-##############################################################################
-
-def _format_context(chunks: list[RetrievedChunk]) -> str:
-    """
-    Render retrieved chunks as a numbered context block for the prompt.
-    Each chunk includes its source label so the model can cite it.
-    """
-    if not chunks:
-        return "(no context retrieved)"
-
-    parts = []
-    for i, c in enumerate(chunks, 1):
-        if c.source_type == "sec_filing":
-            label = f"{c.ticker} {c.filing_type} ({c.filing_date})"
-        else:
-            label = f"{c.ticker} Earnings Call ({c.period})"
-        parts.append(f"[{i}] {label}\n{c.text.strip()}")
-
-    return "\n\n".join(parts)
-
-
-def print_result(result: PipelineResult) -> None:
-    """Pretty-print a PipelineResult for interactive use."""
-    print(f"\n{'='*70}")
-    print(f"Q: {result.question}")
-    print(f"{'─'*70}")
-    print(f"Model : {result.model}  |  top_k={result.top_k}")
-    print(f"Retrieved {len(result.retrieved_chunks)} chunks:")
-    for i, c in enumerate(result.retrieved_chunks, 1):
-        src = (f"{c.ticker} {c.filing_type} {c.filing_date}"
-               if c.source_type == "sec_filing"
-               else f"{c.ticker} ECT {c.period}")
-        print(f"  [{i}] score={c.score:.4f}  {src}")
-    print(f"{'─'*70}")
-    print(f"A: {result.answer}")
-    print(f"{'='*70}\n")
-
-
-##############################################################################
-#                              SMOKE TEST                                    #
-##############################################################################
-
-if __name__ == "__main__":
+def test_pipeline():
     # Tests one question from each difficulty tier
-    pipeline = RAGPipeline(model="qwen")
+    pipeline = RAGPipeline(model=DEFAULT_MODEL)
 
     test_questions = [
         # L1 — direct extraction
@@ -223,3 +204,6 @@ if __name__ == "__main__":
     for q in test_questions:
         result = pipeline.run(q, top_k=5)
         print_result(result)
+
+if __name__ == "__main__":
+    test_pipeline()

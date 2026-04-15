@@ -1,6 +1,34 @@
-def main():
-    print("Hello from rag-agents!")
+import argparse
+from src.baseline.evaluation import evaluate_pipeline
+from src.agentic.agentic_evaluation import evaluate_agentic_pipeline
 
+
+def run(latest_data=False, max_questions=None, seed=42, reindex=False):
+    
+    # Step 1: Fetch latest data if flag is set
+    if latest_data:
+        from src.data import fetch_data
+        fetch_data()
+
+    # Step 2: Build index (chunking, embedding, and indexing)
+    if reindex:
+        from src.chunking import build_index
+        build_index()
+
+    # Step 3: Run Baseline RAG pipeline on questions
+    evaluate_pipeline(max_questions=max_questions, seed=seed)
+
+    # Step 4: Run Agentic RAG pipeline on questions
+    evaluate_agentic_pipeline(max_questions=max_questions, seed=seed)
+    
 
 if __name__ == "__main__":
-    main()
+
+    parser = argparse.ArgumentParser(description="Run complete Baseline vs Agentic RAG evaluation pipeline")
+    parser.add_argument('-l', '--latest', action='store_true', help="Download and use the latest SEC filings and ECT transcripts (instead of existing local copies)")
+    parser.add_argument('--reindex', action='store_true', help="Rebuild the Chroma collection from scratch")
+    parser.add_argument("--max-questions", type=int, default=None, help="Limit number of benchmark questions for faster runs")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed stored in run metadata")
+    args = parser.parse_args()
+
+    run(args.latest, args.max_questions, args.seed, args.reindex)

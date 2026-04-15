@@ -11,7 +11,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-03-31"
   },
   {
@@ -26,7 +25,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
@@ -41,7 +39,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
@@ -56,12 +53,11 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
     "id": "6868d075",
-    "question": "How much did Services revenue grow year-over-year in Q3 FY2024?",
+    "question": "How much did Apple's Services revenue grow year-over-year in Q3 FY2024?",
     "answer": "14% year-over-year, reaching $24.2 billion (all-time high)",
     "supporting_passage": null,
     "source_refs": [
@@ -71,7 +67,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
@@ -86,7 +81,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
@@ -101,7 +95,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
@@ -116,12 +109,11 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
     "id": "67a06367",
-    "question": "What was the foreign exchange headwind impact on Q3 FY2024 revenue?",
+    "question": "What was the foreign exchange headwind impact on Apple'sQ3 FY2024 revenue?",
     "answer": "230 basis points (2.3%) negative year-over-year impact on revenue",
     "supporting_passage": null,
     "source_refs": [
@@ -131,12 +123,11 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
     "id": "f0b2bd2f",
-    "question": "What was Services gross margin percentage in Q3 FY2023?",
+    "question": "What was Apple's Services gross margin percentage in Q3 FY2023?",
     "answer": "70.5%",
     "supporting_passage": null,
     "source_refs": [
@@ -146,7 +137,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
@@ -161,7 +151,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
@@ -176,7 +165,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
@@ -191,7 +179,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-02"
   },
   {
@@ -207,12 +194,11 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-02"
   },
   {
     "id": "b91bed7f",
-    "question": "How did Services gross margin percentage change from Q3 FY2023 to Q3 FY2024?",
+    "question": "How did Apple's Services gross margin percentage change from Q3 FY2023 to Q3 FY2024?",
     "answer": "Improved from 70.5% to 74.0%, a +350 basis point increase. The improvement was driven primarily by a more favorable Services mix.",
     "supporting_passage": null,
     "source_refs": [
@@ -223,7 +209,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-02"
   },
   {
@@ -239,12 +224,11 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-02"
   },
   {
     "id": "85f8c516",
-    "question": "How did Greater China revenue trend across the first three quarters of FY2024?",
+    "question": "How did Apple's Greater China revenue trend across the first three quarters of FY2024?",
     "answer": "H1 FY2024 (Q1+Q2): Steeper YoY decline (double-digits, -8% in Q2). Q3 FY2024: -6.5% YoY (or -3% constant currency). Tim Cook noted Q3 showed 'improvement from the first half' and was 'pleased to see the acceleration.' Over 50% of Q3 YoY decline was FX-related. iPhone grew in Mainland China on a reported basis.",
     "supporting_passage": null,
     "source_refs": [
@@ -255,12 +239,11 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-02"
   },
   {
     "id": "0d98dc78",
-    "question": "Compare the foreign exchange headwind impact on revenue across Q3 FY2023, Q2 FY2024, and Q3 FY2024.",
+    "question": "Compare the foreign exchange headwind impact on Apple's revenue across Q3 FY2023, Q2 FY2024, and Q3 FY2024.",
     "answer": "Q3 FY2023: ~400 bps (nearly 4 percentage points) negative impact. Q2 FY2024: 140 bps negative impact. Q3 FY2024: 230 bps negative impact. Trend: FX headwinds have moderated significantly from the severe Q3 FY2023 levels, though they remain a drag on reported results.",
     "supporting_passage": null,
     "source_refs": [
@@ -272,7 +255,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-02"
   },
   {
@@ -288,13 +270,12 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-02"
   },
   {
     "id": "9d8ac506",
-    "question": "How has management's narrative around AI evolved from Q3 FY2023 to Q3 FY2024?",
-    "answer": "Q3 FY2023: Tim Cook mentioned AI/ML as 'core fundamental technologies integral to virtually every product,' referenced existing AI features (fall detection, crash detection), stated Apple is 'doing research across a wide range of AI technologies, including generative AI,' but was vague ('we tend to announce things as they come to market'). Q2 FY2024: More bullish tone - 'very bullish about our opportunity in generative AI,' 'making significant investments,' highlighted hardware/software integration and privacy as differentiators. Q3 FY2024: Apple Intelligence formally announced at WWDC with detailed features (Writing Tools, Image Playground, enhanced Siri), specific hardware requirements (iPhone 15 Pro+, M-series), Private Cloud Compute introduced, ChatGPT integration announced. Evolution: Defensive/vague \u2192 building anticipation \u2192 full product reveal with monetization implications.",
+    "question": "How has Apple's management's narrative around AI evolved from Q3 FY2023 to Q3 FY2024?",
+    "answer": "Q3 FY2023: Tim Cook mentioned AI/ML as 'core fundamental technologies integral to virtually every product,' referenced existing AI features (fall detection, crash detection), stated Apple is 'doing research across a wide range of AI technologies, including generative AI,' but was vague ('we tend to announce things as they come to market'). Q2 FY2024: More bullish tone - 'very bullish about our opportunity in generative AI,' 'making significant investments,' highlighted hardware/software integration and privacy as differentiators. Q3 FY2024: Apple Intelligence formally announced at WWDC with detailed features (Writing Tools, Image Playground, enhanced Siri), specific hardware requirements (iPhone 15 Pro+, M-series), Private Cloud Compute introduced, ChatGPT integration announced. Evolution: Defensive/vague → building anticipation → full product reveal with monetization implications.",
     "supporting_passage": null,
     "source_refs": [
       "ect/AAPL/2023_Q3.json",
@@ -305,7 +286,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "altered_guidance",
     "created": "2026-04-02"
   },
   {
@@ -321,7 +301,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "altered_guidance",
     "created": "2026-04-02"
   },
   {
@@ -338,7 +317,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "altered_guidance",
     "created": "2026-04-02"
   },
   {
@@ -354,7 +332,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "altered_guidance",
     "created": "2026-04-02"
   },
   {
@@ -371,7 +348,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "altered_guidance",
     "created": "2026-04-02"
   },
   {
@@ -387,7 +363,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "multi_source",
     "created": "2026-04-02"
   },
   {
@@ -403,7 +378,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "multi_source",
     "created": "2026-04-02"
   },
   {
@@ -419,7 +393,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "multi_source",
     "created": "2026-04-02"
   },
   {
@@ -435,7 +408,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "multi_source",
     "created": "2026-04-02"
   },
   {
@@ -451,13 +423,12 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "multi_source",
     "created": "2026-04-02"
   },
   {
     "id": "cd66b7f2",
     "question": "The Q3 FY2024 10-Q shows restricted marketable securities of $14.1 billion related to the State Aid Decision. Using both the 10-Q and earnings call, assess the timeline and risk profile of this matter.",
-    "answer": "From Q3 FY2024 10-Q (Note 6): \u20ac13.1 billion recovery amount plus \u20ac1.2 billion interest originally, adjusted to \u20ac12.7 billion as of September 2023, $14.1 billion restricted in escrow, General Court annulled State Aid Decision (July 2020), Commission appealed to ECJ, hearing held May 23, 2023, decision expected Q4 2024 (imminent), Apple believes it could claim U.S. foreign tax credit for portion of any Irish taxes due. From Q3 FY2024 Earnings Call: NOT DISCUSSED - notably absent from prepared remarks or Q&A, no analyst questions despite imminent ECJ decision. Risk assessment: Materiality is significant ($14.1B = ~21% of FY2023 net income), timing is imminent (within months), binary outcome (win or pay), mitigation exists (partial U.S. tax credit), management gave zero proactive discussion, prior ruling was favorable (General Court). Conclusion: Material, imminent, binary-outcome risk that management chose not to address proactively.",
+    "answer": "From Q3 FY2024 10-Q (Note 6): €13.1 billion recovery amount plus €1.2 billion interest originally, adjusted to €12.7 billion as of September 2023, $14.1 billion restricted in escrow, General Court annulled State Aid Decision (July 2020), Commission appealed to ECJ, hearing held May 23, 2023, decision expected Q4 2024 (imminent), Apple believes it could claim U.S. foreign tax credit for portion of any Irish taxes due. From Q3 FY2024 Earnings Call: NOT DISCUSSED - notably absent from prepared remarks or Q&A, no analyst questions despite imminent ECJ decision. Risk assessment: Materiality is significant ($14.1B = ~21% of FY2023 net income), timing is imminent (within months), binary outcome (win or pay), mitigation exists (partial U.S. tax credit), management gave zero proactive discussion, prior ruling was favorable (General Court). Conclusion: Material, imminent, binary-outcome risk that management chose not to address proactively.",
     "supporting_passage": null,
     "source_refs": [
       "sec_filings/AAPL/10-Q/10-Q_20240802.json",
@@ -467,7 +438,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "multi_source",
     "created": "2026-04-02"
   },
   {
@@ -483,13 +453,12 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "multi_source",
     "created": "2026-04-02"
   },
   {
     "id": "e2f3a4b5",
     "question": "Cross-reference the Q3 FY2023 and Q3 FY2024 earnings calls. How did the Services growth narrative evolve, and what new drivers emerged?",
-    "answer": "Q3 FY2023 Services: Revenue $21.2 billion (+8% YoY, accelerated sequentially), records in cloud/video/AppleCare/payments (all-time) and App Store/advertising/Music (June quarter), just passed 1 billion paid subscriptions milestone, 2 billion+ active devices installed base. Q3 FY2024 Services: Revenue $24.2 billion (+14% YoY), all-time records in advertising/cloud/payment services, 'well over 1 billion' paid subscriptions (>2x from 4 years ago), transacting accounts and paid accounts both at all-time highs with double-digit growth. Growth rate evolution: Q3 FY2023 +8% YoY \u2192 Q3 FY2024 +14% YoY. New/emphasized drivers in Q3 FY2024: (1) Advertising now explicitly called out as growth driver, (2) Engagement metrics more emphasis on 'transacting accounts' and 'paid accounts,' (3) EU App Store noted as only 7% of total (risk mitigation framing). Narrative shift: From emphasizing milestone (1B subscriptions) and diversity to emphasizing acceleration, engagement depth, and sustainability of double-digit growth.",
+    "answer": "Q3 FY2023 Services: Revenue $21.2 billion (+8% YoY, accelerated sequentially), records in cloud/video/AppleCare/payments (all-time) and App Store/advertising/Music (June quarter), just passed 1 billion paid subscriptions milestone, 2 billion+ active devices installed base. Q3 FY2024 Services: Revenue $24.2 billion (+14% YoY), all-time records in advertising/cloud/payment services, 'well over 1 billion' paid subscriptions (>2x from 4 years ago), transacting accounts and paid accounts both at all-time highs with double-digit growth. Growth rate evolution: Q3 FY2023 +8% YoY → Q3 FY2024 +14% YoY. New/emphasized drivers in Q3 FY2024: (1) Advertising now explicitly called out as growth driver, (2) Engagement metrics more emphasis on 'transacting accounts' and 'paid accounts,' (3) EU App Store noted as only 7% of total (risk mitigation framing). Narrative shift: From emphasizing milestone (1B subscriptions) and diversity to emphasizing acceleration, engagement depth, and sustainability of double-digit growth.",
     "supporting_passage": null,
     "source_refs": [
       "ect/AAPL/2023_Q3.json",
@@ -499,7 +468,6 @@
     "tickers": [
       "AAPL"
     ],
-    "hallucination_type": "multi_source",
     "created": "2026-04-02"
   },
   {
@@ -512,7 +480,6 @@
     "tickers": [
       "JPM"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -525,7 +492,6 @@
     "tickers": [
       "JPM"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -538,7 +504,6 @@
     "tickers": [
       "JPM"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -551,7 +516,6 @@
     "tickers": [
       "JPM"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -564,7 +528,6 @@
     "tickers": [
       "JPM"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-04"
   },
   {
@@ -577,7 +540,6 @@
     "tickers": [
       "JPM"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-04"
   },
   {
@@ -590,7 +552,6 @@
     "tickers": [
       "JPM"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-04"
   },
   {
@@ -603,7 +564,6 @@
     "tickers": [
       "JPM"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-04"
   },
   {
@@ -616,7 +576,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -629,7 +588,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -642,7 +600,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -655,7 +612,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -668,7 +624,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -681,7 +636,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -694,7 +648,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -707,7 +660,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "fabricated_figure",
     "created": "2026-04-04"
   },
   {
@@ -720,7 +672,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-04"
   },
   {
@@ -733,7 +684,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-04"
   },
   {
@@ -746,7 +696,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-04"
   },
   {
@@ -759,7 +708,6 @@
     "tickers": [
       "F"
     ],
-    "hallucination_type": "temporal_confusion",
     "created": "2026-04-04"
   }
 ]

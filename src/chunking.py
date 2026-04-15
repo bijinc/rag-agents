@@ -1,121 +1,272 @@
-import os
 import json
+import re
 import tiktoken
 import chromadb
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
+from chonkie import SemanticChunker
+from chonkie.embeddings import SentenceTransformerEmbeddings
 
-##############################################################################
-#                              CONFIGURATION                                 #
-##############################################################################
+from src.constants import EMBEDDING_MODEL, COLLECTION_NAME, CHROMA_DB_PATH
+from src.finance import normalize_ticker, normalize_fiscal_quarter, canonical_period_key, parse_year_quarter
 
-CHUNK_SIZE = 512  # tokens per chunk
-OVERLAP = 50      # overlap tokens between chunks
-BATCH_SIZE = 64   # for embedding batches
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-CHROMA_DB_PATH = "data/chroma_db"
-COLLECTION_NAME = "financial_docs"
+SEC_CHUNK_SIZE = 864
+SEC_OVERLAP = 160
 
-##############################################################################
-#                          DOCUMENT LOADING                                  #
-##############################################################################
+ECT_CHUNK_SIZE = 480
+ECT_OVERLAP = 80
+
+BATCH_SIZE = 128    # for embedding batches
+_SEMANTIC_EMBEDDINGS = None
+
+
+def _safe_str(value) -> str:
+    if value is None:
+        return ""
+    return str(value)
+
+
+def _classify_section(chunk_text: str, source_type: str) -> str:
+    text = chunk_text.lower()
+    if source_type == "sec_filing":
+        if re.search(r"item\s+1a\b|risk\s+factors", text):
+            return "risk_factors"
+        if re.search(r"item\s+7\b|management'?s\s+discussion|md&a", text):
+            return "md&a"
+        if re.search(r"item\s+8\b|financial\s+statements|balance\s+sheet|income\s+statement|cash\s+flows", text):
+            return "financial_statements"
+        if re.search(r"forward-looking\s+statements", text):
+            return "forward_looking_statements"
+        return "general"
+
+    if re.search(r"question\s*(and|&)\s*answer|q&a", text):
+        return "q_and_a"
+    if re.search(r"prepared\s+remarks|opening\s+remarks|operator", text):
+        return "prepared_remarks"
+    return "general"
+
+
+def _token_window_split(text: str, chunk_size: int, overlap: int) -> list[str]:
+    encoding = tiktoken.get_encoding("cl100k_base")
+    tokens = encoding.encode(text)
+    if not tokens:
+        return []
+    step = max(1, chunk_size - overlap)
+    chunks: list[str] = []
+    for i in range(0, len(tokens), step):
+        chunk_tokens = tokens[i : i + chunk_size]
+        if chunk_tokens:
+            chunks.append(encoding.decode(chunk_tokens))
+    return chunks
+
+
+def _looks_like_table_line(line: str) -> bool:
+    stripped = line.strip()
+    if not stripped:
+        return False
+    if "|" in stripped or "\t" in stripped:
+        return True
+    # Numeric-heavy fixed-width rows often have repeated multi-space separators.
+    if re.search(r"\S\s{2,}\S", stripped) and re.search(r"\d", stripped):
+        return True
+    return False
+
+
+def _sec_structured_segments(text: str) -> list[dict]:
+    lines = text.splitlines()
+    if not lines:
+        return [{"kind": "prose", "text": text}]
+
+    segments: list[dict] = []
+    table_buf: list[str] = []
+    prose_buf: list[str] = []
+
+    def flush_prose() -> None:
+        if prose_buf:
+            prose_text = "\n".join(prose_buf).strip()
+            if prose_text:
+                segments.append({"kind": "prose", "text": prose_text})
+            prose_buf.clear()
+
+    def flush_table() -> None:
+        if table_buf:
+            table_text = "\n".join(table_buf).strip()
+            if table_text:
+                segments.append({"kind": "table", "text": table_text})
+            table_buf.clear()
+
+    for line in lines:
+        if _looks_like_table_line(line):
+            flush_prose()
+            table_buf.append(line)
+        else:
+            flush_table()
+            prose_buf.append(line)
+
+    flush_table()
+    flush_prose()
+
+    return segments or [{"kind": "prose", "text": text}]
+
+
+def _normalize_semantic_chunks(chonkie_chunks, chunk_kind: str) -> list[dict]:
+    normalized_chunks: list[dict] = []
+    for item in chonkie_chunks:
+        text = item.text if hasattr(item, "text") else item
+        if isinstance(text, str) and text.strip():
+            normalized_chunks.append({"text": text, "chunk_kind": chunk_kind})
+    return normalized_chunks
+
+
+def _get_semantic_embeddings():
+    global _SEMANTIC_EMBEDDINGS
+    if _SEMANTIC_EMBEDDINGS is None:
+        _SEMANTIC_EMBEDDINGS = SentenceTransformerEmbeddings(EMBEDDING_MODEL, device="cpu")
+    return _SEMANTIC_EMBEDDINGS
+
+
+def _build_semantic_chunker(chunk_size: int) -> SemanticChunker:
+    return SemanticChunker(embedding_model=_get_semantic_embeddings(), chunk_size=chunk_size)
+
+
+def _chunk_ect(text: str) -> list[dict]:
+    try:
+        chunker = _build_semantic_chunker(ECT_CHUNK_SIZE)
+        chunks = _normalize_semantic_chunks(chunker.chunk(text), chunk_kind="semantic")
+        if chunks:
+            return chunks
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [chunking] ECT Chonkie failed, using token windows: {exc}")
+
+    fallback = _token_window_split(text, chunk_size=ECT_CHUNK_SIZE, overlap=ECT_OVERLAP)
+    return [{"text": c, "chunk_kind": "semantic"} for c in fallback if c.strip()]
+
+
+def _extract_table_header(prose_text: str, max_chars: int = 200) -> str:
+    """Extract the last meaningful line(s) from a prose segment to use as
+    a context header for the table that follows it.  This gives table chunks
+    natural-language context so embeddings and BM25 can match queries like
+    'total net revenue' to a table containing '$391,035'."""
+    if not prose_text:
+        return ""
+    lines = [l.strip() for l in prose_text.strip().splitlines() if l.strip()]
+    if not lines:
+        return ""
+    # Walk backwards, skipping separator lines (dashes, underscores, box-drawing)
+    header_lines = []
+    chars = 0
+    for line in reversed(lines):
+        # Skip lines that are mostly non-alphanumeric (separators, box-drawing)
+        alpha_ratio = sum(1 for ch in line if ch.isalnum()) / max(1, len(line))
+        if alpha_ratio < 0.3:
+            continue
+        if chars + len(line) > max_chars:
+            break
+        header_lines.insert(0, line)
+        chars += len(line)
+        # One or two lines is usually enough context
+        if len(header_lines) >= 2:
+            break
+    return "\n".join(header_lines)
+
+
+def _chunk_sec(text: str) -> list[dict]:
+    out: list[dict] = []
+    prose_chunker = None
+    prose_chunker_failed = False
+
+    try:
+        prose_chunker = _build_semantic_chunker(SEC_CHUNK_SIZE)
+    except Exception as exc:
+        prose_chunker_failed = True
+        print(f"  [chunking] SEC prose Chonkie unavailable, using token windows: {exc}")
+
+    segments = _sec_structured_segments(text)
+    last_prose_text = ""  # track preceding prose for table headers
+
+    for segment in segments:
+        kind = segment["kind"]
+        seg_text = segment["text"]
+
+        if kind == "table":
+            # Prepend context header from preceding prose so table chunks
+            # have natural language for embedding/BM25 matching.
+            header = _extract_table_header(last_prose_text)
+            prefix = f"[Table context: {header}]\n" if header else ""
+            prefixed_text = prefix + seg_text
+
+            table_chunks = _token_window_split(prefixed_text, chunk_size=min(SEC_CHUNK_SIZE, 512), overlap=0)
+            out.extend({"text": t, "chunk_kind": "table"} for t in table_chunks if t.strip())
+            continue
+
+        last_prose_text = seg_text  # remember for next table's header
+
+        if prose_chunker is not None and not prose_chunker_failed:
+            try:
+                semantic_chunks = _normalize_semantic_chunks(prose_chunker.chunk(seg_text), chunk_kind="semantic")
+                if semantic_chunks:
+                    out.extend(semantic_chunks)
+                    continue
+            except Exception as exc:
+                prose_chunker_failed = True
+                print(f"  [chunking] SEC prose Chonkie failed, using token windows: {exc}")
+
+        prose_chunks = _token_window_split(seg_text, chunk_size=SEC_CHUNK_SIZE, overlap=SEC_OVERLAP)
+        out.extend({"text": p, "chunk_kind": "prose"} for p in prose_chunks if p.strip())
+
+    return out if out else [{"text": text, "chunk_kind": "prose"}]
+
+
+def _chunk_document(text: str, source_type: str) -> list[dict]:
+    if source_type == "ect":
+        return _chunk_ect(text)
+    else:
+        return _chunk_sec(text)
+
 
 def load_documents():
     """
     Load all documents from data/raw/sec_filings/ and data/raw/ect/
 
     Returns:
-        list of dicts with keys: ticker, company_name, content, source_type, ...
+        list of dicts with raw content and source metadata
     """
     documents = []
+
+    def append_json_docs(pattern, source_type, error_prefix):
+        for json_file in pattern:
+            try:
+                with open(json_file, "r", encoding="utf-8") as f:
+                    doc = json.load(f)
+                doc["source_type"] = source_type
+                documents.append(doc)
+            except Exception as e:
+                print(f"  {error_prefix} {json_file}: {e}")
+                continue
 
     # Load SEC filings
     sec_path = Path("data/raw/sec_filings")
     if sec_path.exists():
-        for ticker_dir in sec_path.iterdir():
-            if not ticker_dir.is_dir():
-                continue
-            ticker = ticker_dir.name
-
-            for filing_type_dir in ticker_dir.iterdir():
-                if not filing_type_dir.is_dir():
-                    continue
-                filing_type = filing_type_dir.name
-
-                for json_file in filing_type_dir.glob("*.json"):
-                    try:
-                        with open(json_file, 'r', encoding='utf-8') as f:
-                            doc = json.load(f)
-                        doc["source_type"] = "sec_filing"
-                        documents.append(doc)
-                    except Exception as e:
-                        print(f"  ✗ Error loading {json_file}: {e}")
-                        continue
+        append_json_docs(sec_path.glob("*/*/*.json"), "sec_filing", "Error loading SEC filing")
 
     # Load ECT transcripts
     ect_path = Path("data/raw/ect")
     if ect_path.exists():
-        for ticker_dir in ect_path.iterdir():
-            if not ticker_dir.is_dir():
-                continue
-            ticker = ticker_dir.name
-
-            for json_file in ticker_dir.glob("*.json"):
-                try:
-                    with open(json_file, 'r', encoding='utf-8') as f:
-                        doc = json.load(f)
-                    doc["source_type"] = "ect"
-                    documents.append(doc)
-                except Exception as e:
-                    print(f"  ✗ Error loading {json_file}: {e}")
-                    continue
+        append_json_docs(ect_path.glob("*/*.json"), "ect", "Error loading ECT transcript")
 
     return documents
 
-##############################################################################
-#                              CHUNKING                                      #
-##############################################################################
-
-def chunk_text(text, chunk_size=CHUNK_SIZE, overlap=OVERLAP):
-    """
-    Split text into token-based chunks with overlap.
-
-    Args:
-        text: Input text string
-        chunk_size: Target chunk size in tokens
-        overlap: Overlap in tokens between consecutive chunks
-
-    Returns:
-        list of chunk text strings
-    """
-    # Initialize tokenizer
-    encoding = tiktoken.get_encoding("cl100k_base")
-
-    # Encode text to tokens
-    tokens = encoding.encode(text)
-
-    # Create chunks with overlap
-    chunks = []
-    for i in range(0, len(tokens), chunk_size - overlap):
-        chunk_tokens = tokens[i : i + chunk_size]
-        if len(chunk_tokens) > 0:
-            chunk_text = encoding.decode(chunk_tokens)
-            chunks.append(chunk_text)
-
-    return chunks
 
 def create_chunks(doc):
     """
     Create chunk dicts from a single document.
-
     Args:
         doc: Document dict with 'content' and metadata fields
 
     Returns:
         list of chunk dicts with metadata
     """
-    # Get text chunks
-    text_chunks = chunk_text(doc["content"], CHUNK_SIZE, OVERLAP)
+    chunk_entries = _chunk_document(doc["content"], doc["source_type"])
     chunks = []
 
     # Build chunk ID based on source type
@@ -129,15 +280,37 @@ def create_chunks(doc):
         period = doc.get("period", "unknown")
         base_id = f"{doc['ticker']}_ect_{period}"
 
+    # Build period metadata once per document.
+    doc_fiscal_year = _safe_str(doc.get("fiscal_year")) or None
+    doc_fiscal_quarter = normalize_fiscal_quarter(_safe_str(doc.get("fiscal_quarter")) or None)
+    doc_canonical_period = _safe_str(doc.get("canonical_period")) or None
+    doc_period_end_date = _safe_str(doc.get("period_end_date")) or None
+
+    # Derive from ECT period when explicit fiscal metadata is missing.
+    if doc.get("source_type") == "ect" and (doc_fiscal_year is None or doc_fiscal_quarter is None):
+        parsed_year, parsed_quarter = parse_year_quarter(_safe_str(doc.get("period")))
+        if doc_fiscal_year is None and parsed_year is not None:
+            doc_fiscal_year = str(parsed_year)
+        if doc_fiscal_quarter is None and parsed_quarter is not None:
+            doc_fiscal_quarter = parsed_quarter
+
+    if doc_canonical_period is None:
+        doc_canonical_period = canonical_period_key(doc_fiscal_year, doc_fiscal_quarter)
+
     # Create chunk dict for each text chunk
-    for idx, chunk_str in enumerate(text_chunks):
+    for idx, entry in enumerate(chunk_entries):
+        chunk_str = entry["text"]
+        chunk_kind = entry.get("chunk_kind", "prose")
         chunk_dict = {
             "chunk_id": f"{base_id}_{idx}",
-            "ticker": doc["ticker"],
-            "company_name": doc.get("company_name", "Unknown"),
+            "ticker": normalize_ticker(_safe_str(doc.get("ticker"))) or _safe_str(doc.get("ticker")),
             "source_type": doc["source_type"],
-            "chunk_index": str(idx),
-            "total_chunks": str(len(text_chunks)),
+            "section_type": _classify_section(chunk_str, _safe_str(doc.get("source_type"))),
+            "chunk_kind": chunk_kind,
+            "period_end_date": doc_period_end_date,
+            "fiscal_year": doc_fiscal_year,
+            "fiscal_quarter": doc_fiscal_quarter,
+            "canonical_period": doc_canonical_period,
             "text": chunk_str
         }
 
@@ -146,133 +319,104 @@ def create_chunks(doc):
             chunk_dict["filing_type"] = doc.get("filing_type", "")
             chunk_dict["filing_date"] = doc.get("filing_date", "")
         else:
-            chunk_dict["year"] = str(doc.get("year", ""))
-            chunk_dict["quarter"] = str(doc.get("quarter", ""))
             chunk_dict["period"] = doc.get("period", "")
 
         chunks.append(chunk_dict)
 
     return chunks
 
-##############################################################################
-#                         EMBEDDING & INDEXING                               #
-##############################################################################
 
-def build_index(chunk_size=CHUNK_SIZE, overlap=OVERLAP):
-    """
-    Main orchestrator: load documents, chunk, embed, and index in ChromaDB.
-    """
-    print("\n" + "="*70)
-    print("CHUNKING AND EMBEDDING PHASE")
-    print("="*70 + "\n")
+def build_index():
 
-    # Step 1: Load documents
     print("Loading documents...")
     documents = load_documents()
 
     sec_count = len([d for d in documents if d.get("source_type") == "sec_filing"])
     ect_count = len([d for d in documents if d.get("source_type") == "ect"])
 
-    print(f"  ✓ Loaded {sec_count} SEC filings")
-    print(f"  ✓ Loaded {ect_count} ECT transcripts")
+    print(f"  Loaded {sec_count} SEC filings")
+    print(f"  Loaded {ect_count} ECT transcripts")
     print(f"  Total: {len(documents)} documents\n")
 
-    # Step 2: Create chunks
-    print("Chunking documents...")
-    all_chunks = []
-    for doc in documents:
-        chunks = create_chunks(doc)
-        all_chunks.extend(chunks)
-
-    sec_chunks = len([c for c in all_chunks if c.get("source_type") == "sec_filing"])
-    ect_chunks = len([c for c in all_chunks if c.get("source_type") == "ect"])
-
-    print(f"  ✓ Created {sec_chunks} chunks from SEC filings")
-    print(f"  ✓ Created {ect_chunks} chunks from ECT transcripts")
-    print(f"  Total: {len(all_chunks)} chunks\n")
-
-    # Step 3: Initialize ChromaDB
-    print("Initializing ChromaDB...")
-    client = chromadb.PersistentClient(CHROMA_DB_PATH)
-
     # Delete existing collection if it exists (to allow re-runs)
+    client = chromadb.PersistentClient(CHROMA_DB_PATH)
     try:
         client.delete_collection(COLLECTION_NAME)
     except:
         pass
-
     collection = client.create_collection(COLLECTION_NAME)
-    print(f"  ✓ Created ChromaDB collection: {COLLECTION_NAME}\n")
 
-    # Step 4: Initialize embedding model
-    print(f"Loading embedding model: {EMBEDDING_MODEL}...")
-    model = SentenceTransformer(EMBEDDING_MODEL)
-    print(f"  ✓ Model loaded (384 dimensions)\n")
-
-    # Step 5: Embed and upsert in batches
     print("Embedding and indexing chunks...")
-    total_batches = (len(all_chunks) + BATCH_SIZE - 1) // BATCH_SIZE
+    model = SentenceTransformer(EMBEDDING_MODEL)
+    sec_chunks = 0
+    ect_chunks = 0
+    total_chunks = 0
+    pending_chunks: list[dict] = []
+    batch_counter = 0
 
-    for batch_num in range(0, len(all_chunks), BATCH_SIZE):
-        batch_chunks = all_chunks[batch_num : batch_num + BATCH_SIZE]
+    def _flush_batch(batch_chunks: list[dict]) -> None:
+        nonlocal batch_counter
+        if not batch_chunks:
+            return
 
-        # Extract texts and IDs
         texts = [c["text"] for c in batch_chunks]
         ids = [c["chunk_id"] for c in batch_chunks]
-
-        # Prepare metadata (all fields must be strings for ChromaDB)
         metadatas = [
             {
+                "chunk_id": c["chunk_id"],
                 "ticker": c["ticker"],
-                "company_name": c["company_name"],
                 "source_type": c["source_type"],
-                "chunk_index": c["chunk_index"],
-                "total_chunks": c["total_chunks"],
+                "section_type": c["section_type"],
+                "chunk_kind": c.get("chunk_kind", "prose"),
+                "period_end_date": c.get("period_end_date"),
+                "fiscal_year": c.get("fiscal_year"),
+                "fiscal_quarter": c.get("fiscal_quarter"),
+                "canonical_period": c.get("canonical_period"),
                 **({
                     "filing_type": c["filing_type"],
                     "filing_date": c["filing_date"]
                 } if c["source_type"] == "sec_filing" else {
-                    "year": c["year"],
-                    "quarter": c["quarter"],
                     "period": c["period"]
                 })
             }
             for c in batch_chunks
         ]
 
-        # Embed texts
         embeddings = model.encode(texts)
-
-        # Upsert to ChromaDB
         collection.upsert(
             ids=ids,
             embeddings=embeddings,
             documents=texts,
-            metadatas=metadatas
+            metadatas=metadatas,
         )
+        batch_counter += 1
+        print(f"  [batch {batch_counter:4d}] Embedded {len(batch_chunks):3d} chunks")
 
-        batch_num_display = (batch_num // BATCH_SIZE) + 1
-        print(f"  [{batch_num_display:3d}/{total_batches:3d}] Embedded {len(batch_chunks):3d} chunks")
+    for doc in documents:
+        chunks = create_chunks(doc)
+        if doc.get("source_type") == "sec_filing":
+            sec_chunks += len(chunks)
+        else:
+            ect_chunks += len(chunks)
+        total_chunks += len(chunks)
 
-    print(f"\n✓ Indexed {len(all_chunks)} chunks into ChromaDB")
-    print(f"✓ Collection: {COLLECTION_NAME}")
-    print(f"✓ Persistent storage: {CHROMA_DB_PATH}/\n")
+        pending_chunks.extend(chunks)
+        while len(pending_chunks) >= BATCH_SIZE:
+            current_batch = pending_chunks[:BATCH_SIZE]
+            pending_chunks = pending_chunks[BATCH_SIZE:]
+            _flush_batch(current_batch)
 
-    # Step 6: Print summary
-    print("="*70)
-    print("INDEXING COMPLETE")
-    print("="*70)
+    _flush_batch(pending_chunks)
+
+    print(f"\nIndexed {total_chunks} chunks into ChromaDB")
     print(f"\nSummary:")
     print(f"  Documents: {len(documents)}")
-    print(f"  Chunks: {len(all_chunks)}")
-    print(f"  Embedding model: {EMBEDDING_MODEL} (384 dimensions)")
+    print(f"  Created {sec_chunks} chunks from SEC filings")
+    print(f"  Created {ect_chunks} chunks from ECT transcripts")
+    print(f"  Chunks: {total_chunks}")
     print(f"  Vector store: ChromaDB at {CHROMA_DB_PATH}/")
-    print(f"  Collection: {COLLECTION_NAME}")
-    print()
+    print(f"  Collection: {COLLECTION_NAME}\n")
 
-##############################################################################
-#                              MAIN                                          #
-##############################################################################
 
 if __name__ == "__main__":
-    build_index(CHUNK_SIZE, OVERLAP)
+    build_index()

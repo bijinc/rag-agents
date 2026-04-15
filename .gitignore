@@ -208,6 +208,7 @@ __marimo__/
 
 # Project Data (NOT for git)
 /data/
+data/chroma_db/
 data/raw/
 data/processed/
 data/index/
