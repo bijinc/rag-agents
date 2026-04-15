@@ -19,4 +19,10 @@ MODELS = {
 }
 
 
-BENCHMARK_PATH = "data/benchmark_data.json"
+BENCHMARK_PATH = "qa_benchmark.json"
+
+RESULTS_DIR = "results"
+BASELINE_RESULTS_PATH = "results/baseline_eval_results.json"
+AGENTIC_RESULTS_PATH = "results/agentic_eval_results.json"
+SUMMARY_CHARTS_DIR = "results/eval_summary_charts"
+SUMMARY_CHARTS_PREFIX = "comparison"

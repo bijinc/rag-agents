@@ -17,9 +17,10 @@ from pathlib import Path
 from uuid import uuid4
 from dotenv import load_dotenv
 
-from src.constants import GENERATOR_MODEL, EVALUATOR_MODEL, BENCHMARK_PATH, DEFAULT_SEED
+from src.constants import GENERATOR_MODEL, EVALUATOR_MODEL, BENCHMARK_PATH, DEFAULT_SEED, AGENTIC_RESULTS_PATH
 from src.agentic.agentic_pipeline import DEFAULT_MODEL, AgenticPipeline, AgenticResult
 from src.baseline.evaluation import run_ragas, run_llm_judge, EvalRecord
+from src.evaluation_summary import EvaluationSummary
 from src.utils.eval_utils import (
     load_json,
     save_json,
@@ -30,7 +31,7 @@ from src.utils.eval_utils import (
 
 load_dotenv()
 
-RESULTS_PATH   = "data/agentic_eval_results.json"
+RESULTS_PATH   = AGENTIC_RESULTS_PATH
 
 ##############################################################################
 #                           DATA STRUCTURES                                  #
@@ -346,7 +347,7 @@ def evaluate_agentic_pipeline(
     judge_only: bool    = False,
     max_questions: int | None = None,
     seed: int           = DEFAULT_SEED,
-) -> list[AgenticEvalRecord]:
+) -> tuple[list[AgenticEvalRecord], EvaluationSummary]:
     validate_eval_flags(skip_ragas, skip_judge, judge_only)
     random.seed(seed)
 
@@ -382,7 +383,8 @@ def evaluate_agentic_pipeline(
 
     save_results(records, results_path)
     print_summary(records)
-    return records
+    summary = EvaluationSummary.from_records(agentic_records=records)
+    return records, summary
 
 
 if __name__ == "__main__":
