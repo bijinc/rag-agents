@@ -16,7 +16,7 @@ SEC_OVERLAP = 160
 ECT_CHUNK_SIZE = 480
 ECT_OVERLAP = 80
 
-BATCH_SIZE = 256    # for embedding batches
+BATCH_SIZE = 128    # for embedding batches
 _SEMANTIC_EMBEDDINGS = None
 
 
